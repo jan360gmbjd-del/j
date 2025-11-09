@@ -2,34 +2,107 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>hahaha</title>
+    <title>Прыгающее окно</title>
     <style>
+        /* Стили для центрирования кнопки на старте */
         body {
-            margin: 0;
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
-            font-weight: bold;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Важно, чтобы не было полос прокрутки */
             font-family: sans-serif;
+        }
+
+        /* Стили для кнопки */
+        #agreeButton {
+            padding: 10px 20px;
+            font-size: 18px;
             cursor: pointer;
-            user-select: none; /* Запрещаем выделение текста */
+        }
+
+        /* Стили для прыгающего окна */
+        #popupWindow {
+            position: fixed; /* Позиционирование относительно окна браузера */
+            width: 150px;
+            height: 80px;
             background-color: #f0f0f0;
-            border: 1px solid #ccc;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            user-select: none; /* Чтобы нельзя было выделить текст */
+        }
+
+        /* Класс для скрытия элементов */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
-<body onclick="createAnother()">
-    hahaha
+<body>
+
+    <!-- Кнопка, которая видна при загрузке -->
+    <button id="agreeButton">Agree</button>
+
+    <!-- Окно, которое изначально скрыто -->
+    <div id="popupWindow" class="hidden">hahaha</div>
+
     <script>
-        function createAnother() {
-            // Проверяем, есть ли "родительское" окно и нужная функция
-            if (window.opener && typeof window.opener.requestNewWindow === 'function') {
-                // Вызываем функцию из родительского окна, чтобы создать новое
-                window.opener.requestNewWindow();
+        // Находим наши элементы на странице
+        const agreeButton = document.getElementById('agreeButton');
+        const popupWindow = document.getElementById('popupWindow');
+
+        // Переменные для позиции и скорости окна
+        let posX, posY, speedX, speedY;
+
+        // Функция анимации
+        function animate() {
+            // Двигаем окно
+            posX += speedX;
+            posY += speedY;
+
+            // Отталкиваемся от левого и правого краев
+            if (posX <= 0 || posX >= window.innerWidth - popupWindow.offsetWidth) {
+                speedX = -speedX; // Меняем направление по горизонтали
             }
+
+            // Отталкиваемся от верхнего и нижнего краев
+            if (posY <= 0 || posY >= window.innerHeight - popupWindow.offsetHeight) {
+                speedY = -speedY; // Меняем направление по вертикали
+            }
+
+            // Применяем новую позицию к окну
+            popupWindow.style.left = posX + 'px';
+            popupWindow.style.top = posY + 'px';
+
+            // Просим браузер запустить эту функцию снова на следующем кадре
+            requestAnimationFrame(animate);
         }
+
+        // Что происходит при нажатии на кнопку "Agree"
+        agreeButton.addEventListener('click', () => {
+            // 1. Скрываем кнопку
+            agreeButton.classList.add('hidden');
+
+            // 2. Показываем popup-окно
+            popupWindow.classList.remove('hidden');
+
+            // 3. Задаем случайную начальную позицию
+            posX = Math.random() * (window.innerWidth - popupWindow.offsetWidth);
+            posY = Math.random() * (window.innerHeight - popupWindow.offsetHeight);
+
+            // 4. Задаем случайную скорость и направление
+            speedX = (Math.random() - 0.5) * 10; // Случайное число от -5 до 5
+            speedY = (Math.random() - 0.5) * 10; // Случайное число от -5 до 5
+
+            // 5. Запускаем анимацию
+            animate();
+        });
+
     </script>
 </body>
 </html>
