@@ -3,15 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Летающие Окна</title>
+    <title>Не нажимай!</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Кнопка запуска -->
-    <button id="startButton">Начать</button>
+    <div class="container">
+        <h1>Добро пожаловать!</h1>
+        <p>Эта кнопка абсолютно безопасна. Честно.</p>
+        <button id="magicButton">Нажми меня</button>
+    </div>
 
-    <!-- Скрипт подключается в конце тела -->
-    <script src="script.js"></script>
+    <script>
+        const button = document.getElementById('magicButton');
+        const popupUrl = 'popup.html'; // Мы создадим это "виртуально" через JS
+
+        button.addEventListener('click', () => {
+            // Пытаемся открыть новое окно
+            const newWindow = window.open('', '_blank', 'width=400,height=400,resizable=yes,scrollbars=yes');
+
+            // Если браузер заблокировал окно
+            if (!newWindow) {
+                alert('Пожалуйста, разрешите всплывающие окна для этого сайта, чтобы розыгрыш сработал!');
+                return;
+            }
+
+            // Записываем в новое окно HTML-код и подключаем наш "прыгающий" скрипт
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="ru">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Ты попался!</title>
+                    <style>
+                        body {
+                            background-color: #f0f;
+                            color: #fff;
+                            font-family: 'Comic Sans MS', cursive, sans-serif;
+                            text-align: center;
+                            margin: 0;
+                            padding: 20px;
+                            overflow: hidden; /* Скрываем скроллбары */
+                            user-select: none; /* Запрещаем выделение текста */
+                        }
+                        h1 {
+                            font-size: 3em;
+                            animation: blink 1s infinite;
+                        }
+                        @keyframes blink {
+                            0%, 50% { opacity: 1; }
+                            51%, 100% { opacity: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>ТЫ ПОПАЛСЯ! XD</h1>
+                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJidm9jNzJqamN0aXUyM2V2Y3Y4b3RnaHg0c3ZqdzM2NnN3b3FjbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l2JIdfo2c8Ebi2pR6/giphy.gif" alt="Troll Face" width="150">
+                    <p>Теперь это окно будет жить своей жизнью!</p>
+                    <script src="${popupUrl.replace('.html', '.js')}"></script>
+                </body>
+                </html>
+            `);
+            newWindow.document.close(); // Завершаем запись документа
+        });
+    </script>
 </body>
 </html>
