@@ -4,7 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Не нажимай!</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Стили для главной страницы */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        #magicButton {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        #magicButton:hover {
+            background-color: #ff5252;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+        }
+    </style>
 </head>
 <body>
 
@@ -16,19 +65,18 @@
 
     <script>
         const button = document.getElementById('magicButton');
-        const popupUrl = 'popup.html'; // Мы создадим это "виртуально" через JS
 
         button.addEventListener('click', () => {
             // Пытаемся открыть новое окно
-            const newWindow = window.open('', '_blank', 'width=400,height=400,resizable=yes,scrollbars=yes');
+            const newWindow = window.open('', '_blank', 'width=450,height=450,resizable=yes,scrollbars=yes');
 
             // Если браузер заблокировал окно
             if (!newWindow) {
-                alert('Пожалуйста, разрешите всплывающие окна для этого сайта, чтобы розыгрыш сработал!');
+                alert('Пожалуйста, разрешите всплывающие окна для этого сайта, чтобы розыгрыш сработал! Обычно иконка разрешения появляется в адресной строке.');
                 return;
             }
 
-            // Записываем в новое окно HTML-код и подключаем наш "прыгающий" скрипт
+            // Записываем в новое окно ВЕСЬ код: HTML, CSS и JavaScript
             newWindow.document.write(`
                 <!DOCTYPE html>
                 <html lang="ru">
@@ -36,6 +84,7 @@
                     <meta charset="UTF-8">
                     <title>Ты попался!</title>
                     <style>
+                        /* Стили для прыгающего окна */
                         body {
                             background-color: #f0f;
                             color: #fff;
@@ -43,8 +92,8 @@
                             text-align: center;
                             margin: 0;
                             padding: 20px;
-                            overflow: hidden; /* Скрываем скроллбары */
-                            user-select: none; /* Запрещаем выделение текста */
+                            overflow: hidden;
+                            user-select: none;
                         }
                         h1 {
                             font-size: 3em;
@@ -60,11 +109,30 @@
                     <h1>ТЫ ПОПАЛСЯ! XD</h1>
                     <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJidm9jNzJqamN0aXUyM2V2Y3Y4b3RnaHg0c3ZqdzM2NnN3b3FjbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l2JIdfo2c8Ebi2pR6/giphy.gif" alt="Troll Face" width="150">
                     <p>Теперь это окно будет жить своей жизнью!</p>
-                    <script src="${popupUrl.replace('.html', '.js')}"></script>
+
+                    <script>
+                        // JavaScript для прыгающего окна
+                        window.onload = function() {
+                            let moveInterval;
+                            function startJumping() {
+                                moveInterval = setInterval(() => {
+                                    const randomX = Math.floor(Math.random() * (screen.width - 250));
+                                    const randomY = Math.floor(Math.random() * (screen.height - 250));
+                                    window.moveTo(randomX, randomY);
+                                }, 700);
+                            }
+                            startJumping();
+                            
+                            // Злая попытка помешать закрытию
+                            window.addEventListener('beforeunload', () => {
+                                window.open(window.location.href, '_blank', 'width=450,height=450');
+                            });
+                        };
+                    <\/script>
                 </body>
                 </html>
             `);
-            newWindow.document.close(); // Завершаем запись документа
+            newWindow.document.close(); // Завершаем запись документа в новое окно
         });
     </script>
 </body>
