@@ -9,6 +9,7 @@
             margin: 0;
             padding: 10px;
             font-family: sans-serif;
+            user-select: none; /* Запрещаем выделение текста для удобства */
         }
         button {
             cursor: pointer;
@@ -17,50 +18,56 @@
 </head>
 <body>
 
-    <h3>Я прыгаю по экрану!</h3>
+    <h3>Кликни на меня!</h3>
     <button onclick="window.close()">Закрыть</button>
 
     <script>
         // Начальные координаты и скорость
         let x = 100;
         let y = 100;
-        let vx = 5; // скорость по горизонтали
-        let vy = 3; // скорость по вертикали
+        let vx = 5; 
+        let vy = 3; 
 
         function animate() {
-            // Получаем размеры всего экрана (а не окна браузера)
             const screenWidth = screen.availWidth;
             const screenHeight = screen.availHeight;
-            
-            // Получаем размеры нашего всплывающего окна
             const windowWidth = window.outerWidth;
             const windowHeight = window.outerHeight;
 
-            // Двигаем окно
             x += vx;
             y += vy;
 
-            // Отталкиваемся от краев экрана
             if (x + windowWidth > screenWidth || x < 0) {
-                vx = -vx; // Меняем направление по X
+                vx = -vx;
             }
             if (y + windowHeight > screenHeight || y < 0) {
-                vy = -vy; // Меняем направление по Y
+                vy = -vy;
             }
 
-            // Перемещаем окно в новые координаты
             window.moveTo(x, y);
-
-            // Продолжаем анимацию
             requestAnimationFrame(animate);
         }
 
-        // Запускаем анимацию, когда окно полностью загружено
+        // Запускаем анимацию при загрузке окна
         window.onload = function() {
-            // Можно задать случайную начальную позицию
             x = Math.random() * (screen.availWidth - 300);
             y = Math.random() * (screen.availHeight - 200);
             animate();
+
+            // === НОВЫЙ КОД ===
+            // Добавляем обработчик клика на всё окно
+            window.addEventListener('click', function(event) {
+                // Проверяем, был ли клик по кнопке "Закрыть"
+                // Если да, то не открываем новое окно
+                if (event.target.tagName !== 'BUTTON') {
+                    // Открываем новый попап с УНИКАЛЬНЫМ именем (используем время)
+                    window.open(
+                        'popup.html', // Открываем сам себя
+                        'popup_' + Date.now(), // Уникальное имя, чтобы окна не заменяли друг друга
+                        'width=300,height=200'
+                    );
+                }
+            });
         };
     </script>
 
