@@ -2,112 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Прыгающее окно</title>
+    <title>hahaha</title>
     <style>
         body {
-            /* Чтобы кнопка была по центру */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            /* Чтобы не появлялись полосы прокрутки */
-            overflow: hidden;
             margin: 0;
-        }
-
-        #agreeButton {
-            font-size: 20px;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-
-        .bouncing-window {
-            position: fixed;
-            width: 150px;
-            height: 80px;
-            background-color: lightgray;
-            border: 2px solid black;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: sans-serif;
             cursor: pointer;
-            user-select: none; /* Чтобы нельзя было выделить текст при клике */
-        }
-
-        .hidden {
-            display: none;
+            user-select: none; /* Запрещаем выделение текста */
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
         }
     </style>
 </head>
-<body>
-
-    <button id="agreeButton">Agree</button>
-
+<body onclick="createAnother()">
+    hahaha
     <script>
-        const agreeButton = document.getElementById('agreeButton');
-        const windows = [];
-
-        // Конструктор для прыгающего окна
-        function BouncingWindow() {
-            this.element = document.createElement('div');
-            this.element.className = 'bouncing-window';
-            this.element.textContent = 'hahaha';
-
-            // Начальная позиция
-            this.x = Math.random() * (window.innerWidth - 150);
-            this.y = Math.random() * (window.innerHeight - 80);
-
-            // Скорость
-            this.vx = (Math.random() - 0.5) * 10; // Случайная скорость от -5 до 5
-            this.vy = (Math.random() - 0.5) * 10;
-
-            this.element.style.left = this.x + 'px';
-            this.element.style.top = this.y + 'px';
-
-            // При клике на окно создается новое
-            this.element.addEventListener('click', createNewWindow);
-
-            document.body.appendChild(this.element);
-        }
-
-        // Функция обновления позиции окна
-        BouncingWindow.prototype.update = function() {
-            this.x += this.vx;
-            this.y += this.vy;
-
-            // Отталкивание от краев
-            if (this.x <= 0 || this.x >= window.innerWidth - 150) {
-                this.vx = -this.vx;
+        function createAnother() {
+            // Проверяем, есть ли "родительское" окно и нужная функция
+            if (window.opener && typeof window.opener.requestNewWindow === 'function') {
+                // Вызываем функцию из родительского окна, чтобы создать новое
+                window.opener.requestNewWindow();
             }
-            if (this.y <= 0 || this.y >= window.innerHeight - 80) {
-                this.vy = -this.vy;
-            }
-
-            this.element.style.left = this.x + 'px';
-            this.element.style.top = this.y + 'px';
-        };
-
-        // Функция для создания нового окна
-        function createNewWindow() {
-            const newWindow = new BouncingWindow();
-            windows.push(newWindow);
         }
-
-        // Основной цикл анимации
-        function animate() {
-            windows.forEach(window => {
-                window.update();
-            });
-            requestAnimationFrame(animate);
-        }
-
-        // Обработчик для кнопки Agree
-        agreeButton.addEventListener('click', () => {
-            agreeButton.classList.add('hidden');
-            createNewWindow(); // Создаем первое окно
-            animate(); // Запускаем анимацию
-        });
-
     </script>
 </body>
 </html>
