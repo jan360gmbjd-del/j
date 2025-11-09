@@ -2,138 +2,138 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Не нажимай!</title>
+    <title>Agree</title>
+    
+    <!-- =================== CSS СТИЛИ =================== -->
     <style>
-        /* Стили для главной страницы */
-        body {
+        body, html {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #d3d3d3; /* Нейтральный серый фон */
+            overflow: hidden; /* Важно для полноэкранного режима */
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            text-align: center;
+            font-family: sans-serif;
         }
 
-        .container {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-            opacity: 0.8;
-        }
-
-        #magicButton {
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
+        #startButton {
+            background: white;
+            border: 2px solid black;
             padding: 20px 40px;
-            font-size: 1.5em;
-            border-radius: 50px;
+            font-size: 24px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
         }
 
-        #magicButton:hover {
-            background-color: #ff5252;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+        .window {
+            position: fixed; /* Окно позиционируется относительно экрана */
+            width: 200px;
+            height: 100px;
+            background: white;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            user-select: none; /* Чтобы нельзя было выделить текст */
         }
     </style>
+
 </head>
 <body>
 
-    <div class="container">
-        <h1>Добро пожаловать!</h1>
-        <p>Эта кнопка абсолютно безопасна. Честно.</p>
-        <button id="magicButton">Нажми меня</button>
-    </div>
+    <!-- =================== HTML РАЗМЕТКА =================== -->
+    <button id="startButton">agree</button>
 
+
+    <!-- =================== JAVASCRIPT ЛОГИКА =================== -->
     <script>
-        const button = document.getElementById('magicButton');
+        document.addEventListener('DOMContentLoaded', () => {
+            const startButton = document.getElementById('startButton');
+            const windows = [];
 
-        button.addEventListener('click', () => {
-            // Пытаемся открыть новое окно
-            const newWindow = window.open('', '_blank', 'width=450,height=450,resizable=yes,scrollbars=yes');
-
-            // Если браузер заблокировал окно
-            if (!newWindow) {
-                alert('Пожалуйста, разрешите всплывающие окна для этого сайта, чтобы розыгрыш сработал! Обычно иконка разрешения появляется в адресной строке.');
-                return;
+            // --- Функция для входа в полноэкранный режим (блокировка панели задач) ---
+            function goFullscreen() {
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                }
             }
 
-            // Записываем в новое окно ВЕСЬ код: HTML, CSS и JavaScript
-            newWindow.document.write(`
-                <!DOCTYPE html>
-                <html lang="ru">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Ты попался!</title>
-                    <style>
-                        /* Стили для прыгающего окна */
-                        body {
-                            background-color: #f0f;
-                            color: #fff;
-                            font-family: 'Comic Sans MS', cursive, sans-serif;
-                            text-align: center;
-                            margin: 0;
-                            padding: 20px;
-                            overflow: hidden;
-                            user-select: none;
-                        }
-                        h1 {
-                            font-size: 3em;
-                            animation: blink 1s infinite;
-                        }
-                        @keyframes blink {
-                            0%, 50% { opacity: 1; }
-                            51%, 100% { opacity: 0; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h1>ТЫ ПОПАЛСЯ! XD</h1>
-                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbnJidm9jNzJqamN0aXUyM2V2Y3Y4b3RnaHg0c3ZqdzM2NnN3b3FjbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l2JIdfo2c8Ebi2pR6/giphy.gif" alt="Troll Face" width="150">
-                    <p>Теперь это окно будет жить своей жизнью!</p>
+            // --- Функция создания нового окна ---
+            function createWindow() {
+                const win = document.createElement('div');
+                win.classList.add('window');
+                win.innerText = 'hello';
 
-                    <script>
-                        // JavaScript для прыгающего окна
-                        window.onload = function() {
-                            let moveInterval;
-                            function startJumping() {
-                                moveInterval = setInterval(() => {
-                                    const randomX = Math.floor(Math.random() * (screen.width - 250));
-                                    const randomY = Math.floor(Math.random() * (screen.height - 250));
-                                    window.moveTo(randomX, randomY);
-                                }, 700);
-                            }
-                            startJumping();
-                            
-                            // Злая попытка помешать закрытию
-                            window.addEventListener('beforeunload', () => {
-                                window.open(window.location.href, '_blank', 'width=450,height=450');
-                            });
-                        };
-                    <\/script>
-                </body>
-                </html>
-            `);
-            newWindow.document.close(); // Завершаем запись документа в новое окно
+                // Случайная начальная позиция
+                const x = Math.random() * (window.innerWidth - 200);
+                const y = Math.random() * (window.innerHeight - 100);
+
+                // Случайная скорость и направление
+                const vx = (Math.random() - 0.5) * 4; // Скорость поменьше для плавности
+                const vy = (Math.random() - 0.5) * 4;
+
+                const windowData = {
+                    element: win,
+                    x: x,
+                    y: y,
+                    vx: vx,
+                    vy: vy,
+                    clicks: 0 // Счетчик кликов для этого окна
+                };
+
+                windows.push(windowData);
+                document.body.appendChild(win);
+
+                // При клике на окно
+                win.addEventListener('click', () => {
+                    windowData.clicks++;
+                    win.innerText = `hello +${windowData.clicks}`; // Обновляем текст в этом окне
+                    createWindow(); // И создаем новое окно
+                });
+            }
+
+            // --- Функция плавной анимации ---
+            function animate() {
+                windows.forEach(w => {
+                    // Двигаем окно
+                    w.x += w.vx;
+                    w.y += w.vy;
+
+                    // Отталкивание от краев экрана
+                    if (w.x + w.element.offsetWidth > window.innerWidth || w.x < 0) {
+                        w.vx = -w.vx;
+                    }
+                    if (w.y + w.element.offsetHeight > window.innerHeight || w.y < 0) {
+                        w.vy = -w.vy;
+                    }
+
+                    // Применяем новую позицию
+                    w.element.style.left = w.x + 'px';
+                    w.element.style.top = w.y + 'px';
+                });
+
+                requestAnimationFrame(animate); // Продолжаем анимацию
+            }
+
+            // --- Запуск ---
+            startButton.addEventListener('click', () => {
+                goFullscreen(); // 1. Входим в полноэкранный режим
+                startButton.style.display = 'none'; // 2. Скрываем кнопку
+                
+                createWindow(); // 3. Создаем первое окно
+                animate(); // 4. Запускаем анимацию
+            });
         });
     </script>
+
 </body>
 </html>
