@@ -56,8 +56,7 @@
             cursor: default;
         }
         #level-builder-screen {
-            overflow-x: auto;
-            width: 100%;
+            justify-content: flex-start; /* Align canvas to top */
         }
         #level-builder-screen canvas {
             cursor: crosshair;
@@ -86,15 +85,23 @@
         }
         #builder-tools {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.8);
+            bottom: 10px; /* Moved to bottom */
+            left: 50%;
+            transform: translateX(-50%); /* Centered */
+            background: rgba(0,0,0,0.9);
             padding: 10px;
             border: 1px solid white;
             z-index: 20;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            max-width: 90%;
         }
         #builder-tools h4 {
-            margin-top: 0;
+            width: 100%; /* Make headers take full width */
+            margin: 5px 0;
+            text-align: center;
             border-bottom: 1px solid #aaa;
             padding-bottom: 5px;
         }
@@ -160,31 +167,28 @@
     </div>
     
     <div id="level-builder-screen" class="screen hidden">
+        <canvas id="builderCanvas" width="1600" height="400"></canvas>
         <div id="builder-tools">
-            <h4>Place Tool</h4>
+            <h4>Place</h4>
             <button id="toolPlatform" class="tool-active">Platform</button>
-            <button id="toolDeath">Death Zone</button>
+            <button id="toolDeath">Death</button>
             <button id="toolPortal">Portal</button>
-            <hr>
-            <h4>Edit Tool</h4>
-            <button id="toolSelect">Select/Move</button>
+            <h4>Edit</h4>
+            <button id="toolSelect">Select</button>
             <button id="toolDelete">Delete</button>
-            <hr>
             <h4>Actions</h4>
-            <button id="testLevelBtn">Test Level</button>
-            <button id="toolClear">Clear All</button>
-            <button id="saveLevelBtn">Save Level</button>
-            <button id="backFromBuilderBtn">Back to Menu</button>
-            <hr>
-            <h4>Movement</h4>
+            <button id="testLevelBtn">Test</button>
+            <button id="toolClear">Clear</button>
+            <button id="saveLevelBtn">Save</button>
+            <button id="backFromBuilderBtn">Back</button>
+            <h4>Move</h4>
             <table id="movement-controls">
                 <tr><td></td><td><button id="moveUp" disabled>▲</button></td><td></td></tr>
                 <tr><td><button id="moveLeft" disabled>◄</button></td><td><button id="moveFlip" disabled>Flip</button></td><td><button id="moveRight" disabled>►</button></td></tr>
                 <tr><td></td><td><button id="moveDown" disabled>▼</button></td><td></td></tr>
             </table>
         </div>
-        <canvas id="builderCanvas" width="1600" height="400"></canvas>
-        <p>Click to place/select/delete. Objects snap to grid.</p>
+        <p style="position: absolute; top: 10px; left: 10px;">Click to place/select/delete. Objects snap to grid.</p>
     </div>
 
     <div id="level-select-screen" class="screen hidden">
@@ -261,9 +265,7 @@
             }
         }
 
-        // --- THIS LINE WAS THE BUG ---
         agreeBtn.addEventListener('click', () => showScreen(menuScreen));
-        
         playBtn.addEventListener('click', () => startGame(defaultLevel, 'menu'));
         onlineBtn.addEventListener('click', () => showScreen(onlineMenuScreen));
         backFromOnlineBtn.addEventListener('click', () => showScreen(menuScreen));
@@ -285,8 +287,8 @@
             const keys = {};
             const touchControls = { leftPressed: false, rightPressed: false };
 
-            const keyDownHandler = (e) => keys[e.code] = true;
-            const keyUpHandler = (e) => keys[e.code] = false;
+            const keyDownHandler = (e) => { keys[e.code] = true; };
+            const keyUpHandler = (e) => { keys[e.code] = false; };
             window.addEventListener('keydown', keyDownHandler);
             window.addEventListener('keyup', keyUpHandler);
 
@@ -294,17 +296,12 @@
             const mobileRight = document.getElementById('mobile-right');
             const mobileJump = document.getElementById('mobile-jump');
 
+            // FIX: Removed mouse listeners to prevent conflict with keyboard controls
             mobileLeft.addEventListener('touchstart', (e) => { e.preventDefault(); touchControls.leftPressed = true; });
             mobileLeft.addEventListener('touchend', (e) => { e.preventDefault(); touchControls.leftPressed = false; });
             mobileRight.addEventListener('touchstart', (e) => { e.preventDefault(); touchControls.rightPressed = true; });
             mobileRight.addEventListener('touchend', (e) => { e.preventDefault(); touchControls.rightPressed = false; });
             mobileJump.addEventListener('touchstart', (e) => { e.preventDefault(); if (!player.isJumping) { player.velocityY = player.jumpPower; player.isJumping = true; } });
-            
-            mobileLeft.addEventListener('mousedown', () => touchControls.leftPressed = true);
-            mobileLeft.addEventListener('mouseup', () => touchControls.leftPressed = false);
-            mobileRight.addEventListener('mousedown', () => touchControls.rightPressed = true);
-            mobileRight.addEventListener('mouseup', () => touchControls.rightPressed = false);
-            mobileJump.addEventListener('mousedown', () => { if (!player.isJumping) { player.velocityY = player.jumpPower; player.isJumping = true; } });
 
             function gameLoop() {
                 if (isGameOver) return;
@@ -312,6 +309,8 @@
                 player.velocityX = 0;
                 if (keys['KeyA'] || touchControls.leftPressed) player.velocityX = -player.speed;
                 if (keys['KeyD'] || touchControls.rightPressed) player.velocityX = player.speed;
+                if ((keys['KeyW'] || keys['Space']) && !player.isJumping) { player.velocityY = player.jumpPower; player.isJumping = true; }
+                
                 player.velocityY += 0.5; player.x += player.velocityX; player.y += player.velocityY;
                 if (player.x < 0) player.x = 0; if (player.x + player.width > gameCanvas.width) player.x = gameCanvas.width - player.width;
                 player.isJumping = true; currentLevel.platforms.forEach(platform => { if (player.x < platform.x + platform.width && player.x + player.width > platform.x && player.y < platform.y + platform.height && player.y + player.height > platform.y) { if (player.velocityY > 0 && player.y < platform.y) { player.y = platform.y - player.height; player.velocityY = 0; player.isJumping = false; } } });
