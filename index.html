@@ -40,9 +40,14 @@
         button:hover {
             background: #777;
         }
-        #gameCanvas {
+        canvas {
             border: 2px solid white;
             background: #333;
+        }
+        #game-screen canvas {
+            cursor: default;
+        }
+        #level-builder-screen canvas {
             cursor: crosshair;
         }
         #game-over-overlay {
@@ -116,7 +121,7 @@
             <button id="saveLevelBtn">Save Level</button>
             <button id="backFromBuilderBtn">Back to Menu</button>
         </div>
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <canvas id="builderCanvas" width="800" height="400"></canvas>
         <p>Click to place objects. Player starts at top-left.</p>
     </div>
 
@@ -161,8 +166,6 @@
         const toolPortal = document.getElementById('toolPortal');
         const toolClear = document.getElementById('toolClear');
 
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
         const gameOverSound = document.getElementById('gameOverSound');
         const levelCompleteSound = document.getElementById('levelCompleteSound');
 
@@ -212,17 +215,22 @@
             gameOverSound.currentTime = 0;
             currentLevel = JSON.parse(JSON.stringify(levelData));
 
+            const gameCanvas = document.getElementById('gameCanvas');
+            const ctx = gameCanvas.getContext('2d');
+
             const player = {
                 x: 50, y: 200, width: 30, height: 30,
                 velocityX: 0, velocityY: 0, speed: 5, jumpPower: -12, isJumping: false
             };
 
             const keys = {};
-            window.addEventListener('keydown', e => keys[e.code] = true);
-            window.addEventListener('keyup', e => keys[e.code] = false);
+            const keyDownHandler = (e) => keys[e.code] = true;
+            const keyUpHandler = (e) => keys[e.code] = false;
+            window.addEventListener('keydown', keyDownHandler);
+            window.addEventListener('keyup', keyUpHandler);
 
             function gameLoop() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
                 player.velocityX = 0;
                 if (keys['KeyA']) player.velocityX = -player.speed;
@@ -237,7 +245,7 @@
                 player.y += player.velocityY;
 
                 if (player.x < 0) player.x = 0;
-                if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+                if (player.x + player.width > gameCanvas.width) player.x = gameCanvas.width - player.width;
 
                 player.isJumping = true;
                 currentLevel.platforms.forEach(platform => {
@@ -263,7 +271,7 @@
                     }
                 });
 
-                if (player.y > canvas.height) { gameOver(); }
+                if (player.y > gameCanvas.height) { gameOver(); }
 
                 ctx.fillStyle = 'white'; ctx.font = '20px sans-serif'; ctx.fillText(currentLevel.name, 20, 30);
 
@@ -282,6 +290,13 @@
                 animationId = requestAnimationFrame(gameLoop);
             }
             gameLoop();
+
+            function cleanup() {
+                cancelAnimationFrame(animationId);
+                window.removeEventListener('keydown', keyDownHandler);
+                window.removeEventListener('keyup', keyUpHandler);
+            }
+            return cleanup;
         }
         
         function gameOver() {
@@ -299,11 +314,31 @@
 
         let builderTool = 'platform';
         let builderLevel = { platforms: [], deathZones: [], portals: [] };
+        let builderCleanup;
 
         function startBuilder() {
             showScreen(levelBuilderScreen);
             builderLevel = { platforms: [], deathZones: [], portals: [] };
+            
+            const builderCanvas = document.getElementById('builderCanvas');
+            const ctx = builderCanvas.getContext('2d');
             renderBuilder();
+
+            const clickHandler = (e) => {
+                const rect = builderCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const obj = { x: Math.round(x - 25), y: Math.round(y - 10), width: 50, height: 20 };
+                if (builderTool === 'platform') builderLevel.platforms.push(obj);
+                if (builderTool === 'death') builderLevel.deathZones.push(obj);
+                if (builderTool === 'portal') builderLevel.portals.push({ ...obj, width: 40, height: 50 });
+                renderBuilder();
+            };
+            builderCanvas.addEventListener('click', clickHandler);
+
+            builderCleanup = () => {
+                builderCanvas.removeEventListener('click', clickHandler);
+            };
         }
 
         function setTool(tool) {
@@ -326,26 +361,17 @@
             }
         });
 
-        canvas.addEventListener('click', (e) => {
-            if (levelBuilderScreen.classList.contains('hidden')) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const obj = { x: Math.round(x - 25), y: Math.round(y - 10), width: 50, height: 20 };
-            if (builderTool === 'platform') builderLevel.platforms.push(obj);
-            if (builderTool === 'death') builderLevel.deathZones.push(obj);
-            if (builderTool === 'portal') builderLevel.portals.push({ ...obj, width: 40, height: 50 });
-            renderBuilder();
-        });
-
         function renderBuilder() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const builderCanvas = document.getElementById('builderCanvas');
+            const ctx = builderCanvas.getContext('2d');
+            ctx.clearRect(0, 0, builderCanvas.width, builderCanvas.height);
             ctx.fillStyle = 'cyan'; builderLevel.portals.forEach(p => ctx.fillRect(p.x, p.y, p.width, p.height));
             ctx.fillStyle = 'red'; builderLevel.deathZones.forEach(z => ctx.fillRect(z.x, z.y, z.width, z.height));
             ctx.fillStyle = 'green'; builderLevel.platforms.forEach(p => ctx.fillRect(p.x, p.y, p.width, p.height));
         }
 
         function loadLevelList() {
+            if (builderCleanup) builderCleanup();
             showScreen(levelSelectScreen);
             levelSelectList.innerHTML = '';
             let levelsFound = false;
@@ -357,7 +383,11 @@
                     const btn = document.createElement('button');
                     btn.className = 'level-button';
                     btn.innerText = levelData.name;
-                    btn.addEventListener('click', () => startGame(levelData));
+                    btn.addEventListener('click', () => {
+                        if (builderCleanup) builderCleanup();
+                        const cleanupGame = startGame(levelData);
+                        // We don't need the cleanup function here, but it's good practice
+                    });
                     levelSelectList.appendChild(btn);
                 }
             }
