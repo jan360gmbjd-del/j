@@ -49,11 +49,6 @@
         button:active {
             background: #444;
         }
-        button:disabled {
-            background: #333;
-            color: #666;
-            cursor: not-allowed;
-        }
         canvas {
             border: 2px solid white;
             background: #333;
@@ -62,80 +57,16 @@
         #game-screen canvas {
             cursor: default;
         }
-        #level-builder-screen {
-            justify-content: flex-start;
-            align-items: center;
-            overflow-x: auto;
-            width: 100%;
-            padding-top: 20px;
-        }
-        #level-builder-screen canvas {
-            cursor: crosshair;
-            max-width: 100%;
-        }
         #game-over-overlay {
-            background: #111;
+            background-color: rgba(0, 0, 0, 0.8);
             z-index: 10;
-        }
-        #level-select-list {
-            width: 90%;
-            max-width: 400px;
-            max-height: 60vh;
-            overflow-y: auto;
-            background: #444;
-            border: 1px solid white;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .level-button {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 12px;
-            margin-bottom: 8px;
-            background: #666;
-            border-radius: 0;
-            transition: background-color 0.2s ease;
-        }
-        .level-button:hover {
-            background: #777;
-        }
-        #builder-tools {
-            background: rgba(0,0,0,0.9);
-            padding: 15px;
-            border: 1px solid white;
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 8px;
-            width: 100%;
-            max-width: 900px;
-            box-sizing: border-box;
-            margin-top: 10px;
+            align-items: center;
         }
-        #builder-tools h4 {
-            width: 100%;
-            margin: 10px 0 5px 0;
-            text-align: center;
-            border-bottom: 1px solid #aaa;
-            padding-bottom: 5px;
-        }
-        #builder-tools p {
-            width: 100%;
-            text-align: center;
-            margin: 0 0 10px 0;
-        }
-        .tool-active {
-            background: #00aaff !important;
-        }
-        #movement-controls button {
-            font-size: 20px;
-            padding: 5px 10px;
-            width: 40px;
-            height: 40px;
-        }
-        #movement-controls td {
-            text-align: center;
+        #game-over-overlay img {
+            max-width: 100%;
+            max-height: 100%;
         }
         #cookie-consent-text {
             max-width: 600px;
@@ -146,26 +77,7 @@
         #cookie-consent-text a {
             color: #00aaff;
         }
-        .search-container {
-            width: 90%;
-            max-width: 400px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        .search-input {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            background: #444;
-            border: 1px solid white;
-            color: white;
-            border-radius: 0;
-            box-sizing: border-box;
-        }
-        .search-input::placeholder {
-            color: #aaa;
-        }
-
+        
         /* --- MOBILE CONTROLS --- */
         #mobile-game-controls {
             position: fixed;
@@ -219,59 +131,14 @@
     <div id="cookie-consent-screen" class="screen">
         <h1>We Use Cookies</h1>
         <div id="cookie-consent-text">
-            <p>This website uses cookies to enhance your experience, analyze site traffic, and personalize content. By clicking "Accept All", you agree to our use of cookies as described in our <a href="#">Privacy Policy</a>.</p>
+            <p>This website uses cookies to enhance your experience. By clicking "Agree", you agree to our use of cookies.</p>
         </div>
-        <button id="acceptBtn">Accept All</button>
+        <button id="acceptBtn">Agree</button>
     </div>
 
     <div id="menu-screen" class="screen hidden">
-        <h1>Main Menu</h1>
+        <h1>Level Game</h1>
         <button id="playBtn">Play</button>
-        <button id="onlineBtn">Online</button>
-    </div>
-
-    <div id="online-menu-screen" class="screen hidden">
-        <h1>Online Mode</h1>
-        <button id="buildBtn">Build Level</button>
-        <button id="findBtn">Find Levels</button>
-        <button id="backFromOnlineBtn">Back</button>
-    </div>
-    
-    <div id="level-builder-screen" class="screen hidden">
-        <canvas id="builderCanvas" width="800" height="400"></canvas>
-        <div id="builder-tools">
-            <p>Click to place/select/delete. Objects snap to grid.</p>
-            <h4>Place</h4>
-            <button id="toolCube" class="tool-active">Cube</button>
-            <button id="toolDeath">Death Cube</button>
-            <button id="toolPortal">Portal</button>
-            <button id="toolWinPortal">Win Portal</button>
-            <button id="toolSpring">Spring</button>
-            <button id="toolMovingCube">Moving Cube</button>
-            <h4>Edit</h4>
-            <button id="toolSelect">Select</button>
-            <button id="toolDelete">Delete</button>
-            <h4>Actions</h4>
-            <button id="testLevelBtn">Test</button>
-            <button id="toolClear">Clear</button>
-            <button id="saveLevelBtn">Save</button>
-            <button id="backFromBuilderBtn">Back</button>
-            <h4>Move</h4>
-            <table id="movement-controls">
-                <tr><td></td><td><button id="moveUp" disabled>▲</button></td><td></td></tr>
-                <tr><td><button id="moveLeft" disabled>◄</button></td><td><button id="moveFlip" disabled>Flip</button></td><td><button id="moveRight" disabled>►</button></td></tr>
-                <tr><td></td><td><button id="moveDown" disabled>▼</button></td><td></td></tr>
-            </table>
-        </div>
-    </div>
-
-    <div id="level-select-screen" class="screen hidden">
-        <h1>Select a Level</h1>
-        <div class="search-container">
-            <input type="text" id="levelSearch" class="search-input" placeholder="Search levels...">
-        </div>
-        <div id="level-select-list"></div>
-        <button id="backFromSelectBtn">Back</button>
     </div>
 
     <div id="game-screen" class="screen hidden">
@@ -280,7 +147,7 @@
     </div>
 
     <div id="game-over-overlay" class="screen hidden">
-        <h1>Game Over</h1>
+        <img src="assets/game-over.gif" alt="Game Over">
     </div>
 
     <!-- MOBILE CONTROLS -->
@@ -293,7 +160,7 @@
     <!-- NOTIFICATION -->
     <div id="notification" class="notification"></div>
 
-    <audio id="gameOverSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-complete-or-approved-mission-205.mp3"></audio>
+    <audio id="gameOverSound" src="assets/game-over-sound.mp3"></audio>
 
     <script>
         const isMobileDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -301,34 +168,43 @@
 
         const consentScreen = document.getElementById('cookie-consent-screen');
         const menuScreen = document.getElementById('menu-screen');
-        const onlineMenuScreen = document.getElementById('online-menu-screen');
-        const levelBuilderScreen = document.getElementById('level-builder-screen');
-        const levelSelectScreen = document.getElementById('level-select-screen');
         const gameScreen = document.getElementById('game-screen');
         const gameOverOverlay = document.getElementById('game-over-overlay');
-        const levelSelectList = document.getElementById('level-select-list');
         const mobileControls = document.getElementById('mobile-game-controls');
-        const levelSearch = document.getElementById('levelSearch');
         const notification = document.getElementById('notification');
-
         const acceptBtn = document.getElementById('acceptBtn');
         const playBtn = document.getElementById('playBtn');
-        const onlineBtn = document.getElementById('onlineBtn');
-        const backFromOnlineBtn = document.getElementById('backFromOnlineBtn');
-        const buildBtn = document.getElementById('buildBtn');
-        const findBtn = document.getElementById('findBtn');
-        const backFromSelectBtn = document.getElementById('backFromSelectBtn');
-        const backFromBuilderBtn = document.getElementById('backFromBuilderBtn');
-        const saveLevelBtn = document.getElementById('saveLevelBtn');
-        const testLevelBtn = document.getElementById('testLevelBtn');
-        
         const gameOverSound = document.getElementById('gameOverSound');
 
         let animationId;
         let currentLevel = {};
         let isGameOver = false;
-        let gameSource = '';
-        let filteredLevels = [];
+        let currentLevelIndex = 0;
+
+        // Define the three levels
+        const levels = [
+            {
+                name: "Level 1: The Beginning",
+                cubes: [{ x: 100, y: 350, width: 100, height: 50 }, { x: 300, y: 350, width: 100, height: 50 }, { x: 500, y: 350, width: 100, height: 50 }],
+                deathCubes: [],
+                movingCubes: [],
+                winPortal: { x: 700, y: 300, width: 40, height: 50 }
+            },
+            {
+                name: "Level 2: A Little Harder",
+                cubes: [{ x: 50, y: 350, width: 80, height: 50 }, { x: 200, y: 280, width: 80, height: 20 }, { x: 400, y: 220, width: 80, height: 20 }, { x: 600, y: 350, width: 100, height: 50 }],
+                deathCubes: [{ x: 280, y: 330, width: 40, height: 40 }, { x: 480, y: 330, width: 40, height: 40 }],
+                movingCubes: [{ x: 350, y: 150, width: 60, height: 20, speed: 2, range: 100, direction: 1, initialX: 350 }],
+                winPortal: { x: 700, y: 300, width: 40, height: 50 }
+            },
+            {
+                name: "Level 3: The Final Challenge",
+                cubes: [{ x: 50, y: 350, width: 60, height: 50 }, { x: 200, y: 320, width: 60, height: 20 }, { x: 350, y: 250, width: 60, height: 20 }, { x: 500, y: 180, width: 60, height: 20 }, { x: 650, y: 110, width: 100, height: 20 }],
+                deathCubes: [{ x: 130, y: 330, width: 40, height: 40 }, { x: 260, y: 300, width: 40, height: 40 }, { x: 410, y: 230, width: 40, height: 40 }, { x: 560, y: 160, width: 40, height: 40 }],
+                movingCubes: [{ x: 150, y: 200, width: 50, height: 20, speed: 3, range: 120, direction: 1, initialX: 150 }, { x: 450, y: 100, width: 50, height: 20, speed: 2, range: 80, direction: -1, initialX: 450 }],
+                winPortal: { x: 720, y: 60, width: 40, height: 50 }
+            }
+        ];
 
         // Show notification function
         function showNotification(message, duration = 3000) {
@@ -349,7 +225,7 @@
                 mobileControls.classList.add('hidden');
             }
         }
-        
+
         // Initial screen logic
         if (localStorage.getItem(CONSENT_KEY) === 'true') {
             showScreen(menuScreen);
@@ -360,43 +236,24 @@
         acceptBtn.addEventListener('click', () => {
             localStorage.setItem(CONSENT_KEY, 'true');
             showScreen(menuScreen);
-            showNotification('Welcome! You can now play or create levels.');
+            showNotification('Welcome! You can now play.');
         });
-        
-        playBtn.addEventListener('click', () => {
-            if (localStorage.length === 1 && localStorage.getItem(CONSENT_KEY)) {
-                const defaultLevel = {
-                    name: "Demo Level",
-                    cubes: [{ x: 100, y: 350, width: 40, height: 40 }, { x: 250, y: 350, width: 40, height: 40 }, 
-                            { x: 400, y: 280, width: 40, height: 40 }, { x: 580, y: 220, width: 40, height: 40 }, 
-                            { x: 700, y: 350, width: 40, height: 40 }],
-                    deathCubes: [{ x: 200, y: 330, width: 40, height: 40 }, { x: 330, y: 330, width: 40, height: 40 }, 
-                                 { x: 480, y: 330, width: 40, height: 40 }, { x: 660, y: 330, width: 40, height: 40 }],
-                    portals: [{ x: 750, y: 300, width: 40, height: 50 }],
-                    winPortals: [],
-                    springs: [{ x: 150, y: 360, width: 40, height: 10 }],
-                    movingCubes: []
-                };
-                startGame(defaultLevel, 'menu');
-            } else {
-                loadLevelList();
-            }
-        });
-        
-        onlineBtn.addEventListener('click', () => showScreen(onlineMenuScreen));
-        backFromOnlineBtn.addEventListener('click', () => showScreen(menuScreen));
-        buildBtn.addEventListener('click', startBuilder);
-        findBtn.addEventListener('click', loadLevelList);
-        backFromSelectBtn.addEventListener('click', () => showScreen(onlineMenuScreen));
-        backFromBuilderBtn.addEventListener('click', () => { if (builderCleanup) builderCleanup(); showScreen(onlineMenuScreen); });
 
-        function startGame(levelData, source) {
-            gameSource = source;
+        playBtn.addEventListener('click', () => {
+            currentLevelIndex = 0;
+            startLevel(currentLevelIndex);
+        });
+
+        gameOverOverlay.addEventListener('click', () => {
+            gameOverSound.pause();
+            gameOverSound.currentTime = 0;
+            showScreen(menuScreen);
+        });
+
+        function startLevel(levelIndex) {
             isGameOver = false;
             showScreen(gameScreen);
-            gameOverSound.pause(); 
-            gameOverSound.currentTime = 0;
-            currentLevel = JSON.parse(JSON.stringify(levelData));
+            currentLevel = JSON.parse(JSON.stringify(levels[levelIndex]));
             const gameCanvas = document.getElementById('gameCanvas'); 
             const ctx = gameCanvas.getContext('2d');
             const player = { x: 50, y: 200, width: 30, height: 30, velocityX: 0, velocityY: 0, speed: 5, jumpPower: -12, isJumping: false };
@@ -442,178 +299,48 @@
                 if (player.x + player.width > gameCanvas.width) player.x = gameCanvas.width - player.width;
                 
                 player.isJumping = true;
-                currentLevel.cubes = currentLevel.cubes || [];
                 currentLevel.cubes.forEach(cube => {
-                    if (player.x < cube.x + cube.width && 
-                        player.x + player.width > cube.x && 
-                        player.y < cube.y + cube.height && 
-                        player.y + player.height > cube.y) {
-                        
-                        if (player.velocityY > 0 && player.y < cube.y) {
-                            player.y = cube.y - player.height;
-                            player.velocityY = 0;
-                            player.isJumping = false;
-                        }
-                        else if (player.velocityY < 0 && player.y > cube.y) {
-                            player.y = cube.y + cube.height;
-                            player.velocityY = 0;
-                        }
-                        else if (player.velocityX > 0 && player.x < cube.x) {
-                            player.x = cube.x - player.width;
-                        }
-                        else if (player.velocityX < 0 && player.x > cube.x) {
-                            player.x = cube.x + cube.width;
-                        }
+                    if (player.x < cube.x + cube.width && player.x + player.width > cube.x && player.y < cube.y + cube.height && player.y + player.height > cube.y) {
+                        if (player.velocityY > 0 && player.y < cube.y) { player.y = cube.y - player.height; player.velocityY = 0; player.isJumping = false; }
+                        else if (player.velocityY < 0 && player.y > cube.y) { player.y = cube.y + cube.height; player.velocityY = 0; }
+                        else if (player.velocityX > 0 && player.x < cube.x) { player.x = cube.x - player.width; }
+                        else if (player.velocityX < 0 && player.x > cube.x) { player.x = cube.x + cube.width; }
                     }
                 });
-                
-                currentLevel.movingCubes = currentLevel.movingCubes || [];
+
                 currentLevel.movingCubes.forEach(cube => {
                     if (!cube.direction) cube.direction = 1;
                     if (!cube.speed) cube.speed = 2;
                     if (!cube.range) cube.range = 100;
                     if (!cube.initialX) cube.initialX = cube.x;
-                    
                     cube.x += cube.speed * cube.direction;
-                    
-                    if (cube.x > cube.initialX + cube.range || cube.x < cube.initialX) {
-                        cube.direction *= -1;
-                    }
-                    
-                    if (player.x < cube.x + cube.width && 
-                        player.x + player.width > cube.x && 
-                        player.y < cube.y + cube.height && 
-                        player.y + player.height > cube.y) {
-                        
-                        if (player.velocityY > 0 && player.y < cube.y) {
-                            player.y = cube.y - player.height;
-                            player.velocityY = 0;
-                            player.isJumping = false;
-                            player.x += cube.speed * cube.direction;
-                        }
-                        else if (player.velocityY < 0 && player.y > cube.y) {
-                            player.y = cube.y + cube.height;
-                            player.velocityY = 0;
-                        }
-                        else if (player.velocityX > 0 && player.x < cube.x) {
-                            player.x = cube.x - player.width;
-                        }
-                        else if (player.velocityX < 0 && player.x > cube.x) {
-                            player.x = cube.x + cube.width;
-                        }
+                    if (cube.x > cube.initialX + cube.range || cube.x < cube.initialX) cube.direction *= -1;
+                    if (player.x < cube.x + cube.width && player.x + player.width > cube.x && player.y < cube.y + cube.height && player.y + player.height > cube.y) {
+                        if (player.velocityY > 0 && player.y < cube.y) { player.y = cube.y - player.height; player.velocityY = 0; player.isJumping = false; player.x += cube.speed * cube.direction; }
+                        else if (player.velocityY < 0 && player.y > cube.y) { player.y = cube.y + cube.height; player.velocityY = 0; }
+                        else if (player.velocityX > 0 && player.x < cube.x) { player.x = cube.x - player.width; }
+                        else if (player.velocityX < 0 && player.x > cube.x) { player.x = cube.x + cube.width; }
                     }
                 });
                 
-                currentLevel.springs = currentLevel.springs || [];
-                currentLevel.springs.forEach(spring => {
-                    if (player.x < spring.x + spring.width && 
-                        player.x + player.width > spring.x && 
-                        player.y < spring.y + spring.height && 
-                        player.y + player.height > spring.y) {
-                        
-                        if (player.velocityY > 0 && player.y < spring.y) {
-                            player.velocityY = -20;
-                            player.isJumping = true;
-                        }
-                    }
-                });
-                
-                currentLevel.portals = currentLevel.portals || [];
-                currentLevel.portals.forEach(portal => {
-                    if (player.x < portal.x + portal.width && 
-                        player.x + player.width > portal.x && 
-                        player.y < portal.y + portal.height && 
-                        player.y + player.height > portal.y) {
-                        const portalIndex = currentLevel.portals.indexOf(portal);
-                        const nextPortal = currentLevel.portals[(portalIndex + 1) % currentLevel.portals.length];
-                        
-                        player.x = nextPortal.x + (nextPortal.width - player.width) / 2;
-                        player.y = nextPortal.y + (nextPortal.height - player.height) / 2;
-                    }
-                });
-                
-                currentLevel.winPortals = currentLevel.winPortals || [];
-                currentLevel.winPortals.forEach(portal => {
-                    if (player.x < portal.x + portal.width && 
-                        player.x + player.width > portal.x && 
-                        player.y < portal.y + portal.height && 
-                        player.y + player.height > portal.y) {
-                        levelComplete();
-                    }
-                });
-                
-                currentLevel.deathCubes = currentLevel.deathCubes || [];
                 currentLevel.deathCubes.forEach(cube => {
-                    if (player.x < cube.x + cube.width && 
-                        player.x + player.width > cube.x && 
-                        player.y < cube.y + cube.height && 
-                        player.y + player.height > cube.y) {
-                        gameOver();
-                    }
+                    if (player.x < cube.x + cube.width && player.x + player.width > cube.x && player.y < cube.y + cube.height && player.y + player.height > cube.y) { gameOver(); }
                 });
                 
-                if (player.y > gameCanvas.height) { 
-                    gameOver(); 
+                if (player.x < currentLevel.winPortal.x + currentLevel.winPortal.width && player.x + player.width > currentLevel.winPortal.x && player.y < currentLevel.winPortal.y + currentLevel.winPortal.height && player.y + player.height > currentLevel.winPortal.y) {
+                    levelComplete();
                 }
                 
-                ctx.fillStyle = 'white'; 
-                ctx.font = '20px sans-serif'; 
-                ctx.fillText(currentLevel.name || "Untitled Level", 20, 30);
+                if (player.y > gameCanvas.height) { gameOver(); }
                 
-                ctx.fillStyle = 'gold';
-                currentLevel.winPortals.forEach(portal => {
-                    ctx.fillRect(portal.x, portal.y, portal.width, portal.height);
-                });
+                ctx.fillStyle = 'white'; ctx.font = '20px sans-serif'; ctx.fillText(currentLevel.name, 20, 30);
                 
-                ctx.fillStyle = 'cyan';
-                currentLevel.portals.forEach(portal => {
-                    ctx.fillRect(portal.x, portal.y, portal.width, portal.height);
-                });
+                ctx.fillStyle = 'gold'; ctx.fillRect(currentLevel.winPortal.x, currentLevel.winPortal.y, currentLevel.winPortal.width, currentLevel.winPortal.height);
+                ctx.fillStyle = 'purple'; currentLevel.movingCubes.forEach(cube => { ctx.fillRect(cube.x, cube.y, cube.width, cube.height); });
+                ctx.fillStyle = 'red'; currentLevel.deathCubes.forEach(cube => { ctx.fillRect(cube.x, cube.y, cube.width, cube.height); });
+                ctx.fillStyle = 'green'; currentLevel.cubes.forEach(cube => { ctx.fillRect(cube.x, cube.y, cube.width, cube.height); });
                 
-                ctx.fillStyle = 'lime';
-                currentLevel.springs.forEach(spring => {
-                    ctx.fillRect(spring.x, spring.y, spring.width, spring.height);
-                    ctx.strokeStyle = 'white';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    for (let i = 0; i < spring.width; i += 5) {
-                        ctx.moveTo(spring.x + i, spring.y);
-                        ctx.lineTo(spring.x + i, spring.y + spring.height);
-                    }
-                    ctx.stroke();
-                });
-                
-                ctx.fillStyle = 'purple';
-                currentLevel.movingCubes.forEach(cube => {
-                    ctx.fillRect(cube.x, cube.y, cube.width, cube.height);
-                    ctx.fillStyle = 'white';
-                    ctx.font = '12px sans-serif';
-                    ctx.fillText(cube.direction > 0 ? '→' : '←', cube.x + cube.width/2 - 5, cube.y + cube.height/2 + 5);
-                    ctx.fillStyle = 'purple';
-                });
-                
-                ctx.fillStyle = 'red';
-                currentLevel.deathCubes.forEach(cube => {
-                    ctx.fillRect(cube.x, cube.y, cube.width, cube.height);
-                    ctx.fillStyle = 'white';
-                    ctx.font = '20px sans-serif';
-                    ctx.fillText('⚠', cube.x + cube.width/2 - 10, cube.y + cube.height/2 + 7);
-                    ctx.fillStyle = 'red';
-                });
-                
-                ctx.fillStyle = 'green';
-                currentLevel.cubes.forEach(cube => {
-                    ctx.fillRect(cube.x, cube.y, cube.width, cube.height);
-                    ctx.strokeStyle = 'darkgreen';
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(cube.x, cube.y, cube.width, cube.height);
-                });
-                
-                ctx.fillStyle = 'blue';
-                ctx.fillRect(player.x, player.y, player.width, player.height);
-                ctx.fillStyle = 'white';
-                ctx.fillRect(player.x + 5, player.y + 8, 5, 5);
-                ctx.fillRect(player.x + 20, player.y + 8, 5, 5);
+                ctx.fillStyle = 'blue'; ctx.fillRect(player.x, player.y, player.width, player.height);
                 
                 animationId = requestAnimationFrame(gameLoop);
             }
@@ -633,351 +360,18 @@
             cancelAnimationFrame(animationId); 
             showScreen(gameOverOverlay); 
             gameOverSound.play(); 
-            
-            window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
-
-            if (Math.random() > 0.5) {
-                setTimeout(() => {
-                    window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
-                }, Math.random() * 3000 + 1000);
-            }
         }
         
         function levelComplete() {
             cancelAnimationFrame(animationId);
-            showNotification('Congratulations! You completed the level!');
-            
-            if (gameSource === 'editor') {
-                setTimeout(() => showScreen(levelBuilderScreen), 1500);
+            currentLevelIndex++;
+            if (currentLevelIndex < levels.length) {
+                showNotification(`Level Complete! Get ready for ${levels[currentLevelIndex].name}!`);
+                setTimeout(() => startLevel(currentLevelIndex), 2000);
             } else {
-                setTimeout(() => showScreen(menuScreen), 1500);
+                showNotification('Congratulations! You have completed all levels!');
+                setTimeout(() => showScreen(menuScreen), 2500);
             }
-        }
-
-        // --- BUILDER LOGIC ---
-        const GRID_SIZE = 20;
-        let builderMode = 'place_cube';
-        let selectedObject = null;
-        let builderLevel = { cubes: [], deathCubes: [], portals: [], winPortals: [], springs: [], movingCubes: [] };
-        let builderCleanup;
-
-        function startBuilder() {
-            showScreen(levelBuilderScreen);
-            builderLevel = { cubes: [], deathCubes: [], portals: [], winPortals: [], springs: [], movingCubes: [] };
-            selectedObject = null; 
-            setTool('place_cube');
-            const builderCanvas = document.getElementById('builderCanvas'); 
-            const ctx = builderCanvas.getContext('2d');
-            
-            if (isMobileDevice) {
-                const maxWidth = window.innerWidth - 40;
-                if (maxWidth < 800) {
-                    builderCanvas.width = maxWidth;
-                    builderCanvas.height = maxWidth * 0.5;
-                }
-            }
-            
-            renderBuilder();
-            
-            const handleInteraction = (e) => {
-                e.preventDefault();
-                const rect = builderCanvas.getBoundingClientRect();
-                const clientX = isMobileDevice ? e.touches[0].clientX : e.clientX;
-                const clientY = isMobileDevice ? e.touches[0].clientY : e.clientY;
-                const x = clientX - rect.left;
-                const y = clientY - rect.top;
-                handleBuilderClick(x, y);
-            };
-
-            builderCanvas.addEventListener('click', handleInteraction);
-            builderCanvas.addEventListener('touchstart', handleInteraction);
-            
-            builderCleanup = () => {
-                builderCanvas.removeEventListener('click', handleInteraction);
-                builderCanvas.removeEventListener('touchstart', handleInteraction);
-            };
-        }
-        
-        testLevelBtn.addEventListener('click', () => {
-            if (builderCleanup) builderCleanup();
-            startGame(builderLevel, 'editor');
-        });
-
-        function setTool(mode) {
-            builderMode = mode; 
-            selectedObject = null;
-            document.querySelectorAll('#builder-tools button').forEach(btn => btn.classList.remove('tool-active'));
-            
-            if (mode === 'place_cube') document.getElementById('toolCube').classList.add('tool-active');
-            if (mode === 'place_death') document.getElementById('toolDeath').classList.add('tool-active');
-            if (mode === 'place_portal') document.getElementById('toolPortal').classList.add('tool-active');
-            if (mode === 'place_winPortal') document.getElementById('toolWinPortal').classList.add('tool-active');
-            if (mode === 'place_spring') document.getElementById('toolSpring').classList.add('tool-active');
-            if (mode === 'place_movingCube') document.getElementById('toolMovingCube').classList.add('tool-active');
-            if (mode === 'select') document.getElementById('toolSelect').classList.add('tool-active');
-            if (mode === 'delete') document.getElementById('toolDelete').classList.add('tool-active');
-            
-            updateMovementButtons(); 
-            renderBuilder();
-        }
-        
-        document.getElementById('toolCube').addEventListener('click', () => setTool('place_cube'));
-        document.getElementById('toolDeath').addEventListener('click', () => setTool('place_death'));
-        document.getElementById('toolPortal').addEventListener('click', () => setTool('place_portal'));
-        document.getElementById('toolWinPortal').addEventListener('click', () => setTool('place_winPortal'));
-        document.getElementById('toolSpring').addEventListener('click', () => setTool('place_spring'));
-        document.getElementById('toolMovingCube').addEventListener('click', () => setTool('place_movingCube'));
-        document.getElementById('toolSelect').addEventListener('click', () => setTool('select'));
-        document.getElementById('toolDelete').addEventListener('click', () => setTool('delete'));
-        document.getElementById('toolClear').addEventListener('click', () => { 
-            builderLevel = { cubes: [], deathCubes: [], portals: [], winPortals: [], springs: [], movingCubes: [] }; 
-            selectedObject = null; 
-            updateMovementButtons(); 
-            renderBuilder(); 
-            showNotification('Level cleared');
-        });
-        
-        saveLevelBtn.addEventListener('click', () => { 
-            const name = prompt("Enter a name for your level:");
-            if (name) { 
-                localStorage.setItem('level_' + name, JSON.stringify({ name: name, ...builderLevel })); 
-                showNotification(`Level "${name}" saved!`);
-            }
-        });
-        
-        document.getElementById('moveUp').addEventListener('click', () => { if (selectedObject) { selectedObject.y -= GRID_SIZE; renderBuilder(); } });
-        document.getElementById('moveDown').addEventListener('click', () => { if (selectedObject) { selectedObject.y += GRID_SIZE; renderBuilder(); } });
-        document.getElementById('moveLeft').addEventListener('click', () => { if (selectedObject) { selectedObject.x -= GRID_SIZE; renderBuilder(); } });
-        document.getElementById('moveRight').addEventListener('click', () => { if (selectedObject) { selectedObject.x += GRID_SIZE; renderBuilder(); } });
-        document.getElementById('moveFlip').addEventListener('click', () => { if (selectedObject) { const temp = selectedObject.width; selectedObject.width = selectedObject.height; selectedObject.height = temp; renderBuilder(); } });
-
-        function updateMovementButtons() {
-            const hasSelection = selectedObject !== null;
-            document.getElementById('moveUp').disabled = !hasSelection;
-            document.getElementById('moveDown').disabled = !hasSelection;
-            document.getElementById('moveLeft').disabled = !hasSelection;
-            document.getElementById('moveRight').disabled = !hasSelection;
-            document.getElementById('moveFlip').disabled = !hasSelection;
-        }
-
-        function handleBuilderClick(x, y) {
-            const gridX = Math.floor(x / GRID_SIZE) * GRID_SIZE;
-            const gridY = Math.floor(y / GRID_SIZE) * GRID_SIZE;
-            const clickPoint = { x: gridX, y: gridY, width: GRID_SIZE, height: GRID_SIZE };
-            
-            if (builderMode.startsWith('place_')) {
-                const type = builderMode.split('_')[1];
-                let obj;
-                
-                switch(type) {
-                    case 'cube':
-                        obj = { x: gridX, y: gridY, width: 40, height: 40 };
-                        builderLevel.cubes.push(obj);
-                        break;
-                    case 'death':
-                        obj = { x: gridX, y: gridY, width: 40, height: 40 };
-                        builderLevel.deathCubes.push(obj);
-                        break;
-                    case 'portal':
-                        obj = { x: gridX, y: gridY, width: 40, height: 50 };
-                        builderLevel.portals.push(obj);
-                        break;
-                    case 'winPortal':
-                        obj = { x: gridX, y: gridY, width: 40, height: 50 };
-                        builderLevel.winPortals.push(obj);
-                        break;
-                    case 'spring':
-                        obj = { x: gridX, y: gridY, width: 40, height: 10 };
-                        builderLevel.springs.push(obj);
-                        break;
-                    case 'movingCube':
-                        obj = { x: gridX, y: gridY, width: 40, height: 40, speed: 2, range: 100, direction: 1, initialX: gridX };
-                        builderLevel.movingCubes.push(obj);
-                        break;
-                }
-            } else if (builderMode === 'select' || builderMode === 'delete') {
-                const allObjects = [
-                    ...builderLevel.cubes, 
-                    ...builderLevel.deathCubes, 
-                    ...builderLevel.portals,
-                    ...builderLevel.winPortals,
-                    ...builderLevel.springs,
-                    ...builderLevel.movingCubes
-                ];
-                
-                let found = null;
-                for (const obj of allObjects) { 
-                    if (isPointInObject(clickPoint, obj)) { 
-                        found = obj; 
-                        break; 
-                    } 
-                }
-                
-                if (found) {
-                    if (builderMode === 'delete') {
-                        builderLevel.cubes = builderLevel.cubes.filter(o => o !== found);
-                        builderLevel.deathCubes = builderLevel.deathCubes.filter(o => o !== found);
-                        builderLevel.portals = builderLevel.portals.filter(o => o !== found);
-                        builderLevel.winPortals = builderLevel.winPortals.filter(o => o !== found);
-                        builderLevel.springs = builderLevel.springs.filter(o => o !== found);
-                        builderLevel.movingCubes = builderLevel.movingCubes.filter(o => o !== found);
-                        
-                        if (selectedObject === found) selectedObject = null;
-                    } else { 
-                        selectedObject = found; 
-                    }
-                } else { 
-                    selectedObject = null; 
-                }
-            }
-            
-            updateMovementButtons(); 
-            renderBuilder();
-        }
-
-        function isPointInObject(point, obj) {
-            return point.x < obj.x + obj.width && 
-                   point.x + point.width > obj.x && 
-                   point.y < obj.y + obj.height && 
-                   point.y + point.height > obj.y;
-        }
-
-        function renderBuilder() {
-            const builderCanvas = document.getElementById('builderCanvas'); 
-            const ctx = builderCanvas.getContext('2d');
-            
-            ctx.clearRect(0, 0, builderCanvas.width, builderCanvas.height);
-            
-            ctx.fillStyle = '#1a1a2e';
-            ctx.fillRect(0, 0, builderCanvas.width, builderCanvas.height);
-            
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-            ctx.lineWidth = 1;
-            for (let x = 0; x <= builderCanvas.width; x += GRID_SIZE) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, builderCanvas.height);
-                ctx.stroke();
-            }
-            for (let y = 0; y <= builderCanvas.height; y += GRID_SIZE) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(builderCanvas.width, y);
-                ctx.stroke();
-            }
-
-            ctx.fillStyle = 'gold';
-            builderLevel.winPortals.forEach(p => {
-                ctx.fillRect(p.x, p.y, p.width, p.height);
-            });
-            
-            ctx.fillStyle = 'cyan';
-            builderLevel.portals.forEach(p => {
-                ctx.fillRect(p.x, p.y, p.width, p.height);
-            });
-            
-            ctx.fillStyle = 'lime';
-            builderLevel.springs.forEach(s => {
-                ctx.fillRect(s.x, s.y, s.width, s.height);
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                for (let i = 0; i < s.width; i += 5) {
-                    ctx.moveTo(s.x + i, s.y);
-                    ctx.lineTo(s.x + i, s.y + s.height);
-                }
-                ctx.stroke();
-            });
-            
-            ctx.fillStyle = 'purple';
-            builderLevel.movingCubes.forEach(cube => {
-                ctx.fillRect(cube.x, cube.y, cube.width, cube.height);
-                ctx.fillStyle = 'white';
-                ctx.font = '12px sans-serif';
-                ctx.fillText(cube.direction > 0 ? '→' : '←', cube.x + cube.width/2 - 5, cube.y + cube.height/2 + 5);
-                ctx.fillStyle = 'purple';
-            });
-            
-            ctx.fillStyle = 'red';
-            builderLevel.deathCubes.forEach(z => {
-                ctx.fillRect(z.x, z.y, z.width, z.height);
-                ctx.fillStyle = 'white';
-                ctx.font = '20px sans-serif';
-                ctx.fillText('⚠', z.x + z.width/2 - 10, z.y + z.height/2 + 7);
-                ctx.fillStyle = 'red';
-            });
-            
-            ctx.fillStyle = 'green';
-            builderLevel.cubes.forEach(p => {
-                ctx.fillRect(p.x, p.y, p.width, p.height);
-                ctx.strokeStyle = 'darkgreen';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(p.x, p.y, p.width, p.height);
-            });
-            
-            if (selectedObject) { 
-                ctx.strokeStyle = 'yellow'; 
-                ctx.lineWidth = 3; 
-                ctx.strokeRect(selectedObject.x - 2, selectedObject.y - 2, selectedObject.width + 4, selectedObject.height + 4); 
-            }
-        }
-
-        function loadLevelList() {
-            if (builderCleanup) builderCleanup(); 
-            showScreen(levelSelectScreen); 
-            levelSelectList.innerHTML = ''; 
-            
-            let levelsFound = false;
-            const levels = [];
-            
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('level_')) {
-                    levelsFound = true;
-                    const levelData = JSON.parse(localStorage.getItem(key));
-                    levels.push(levelData);
-                }
-            }
-            
-            const searchTerm = levelSearch.value.toLowerCase();
-            filteredLevels = levels.filter(level => 
-                level.name.toLowerCase().includes(searchTerm)
-            );
-            
-            if (filteredLevels.length > 0) {
-                filteredLevels.forEach(levelData => {
-                    const btn = document.createElement('button');
-                    btn.className = 'level-button';
-                    btn.innerText = levelData.name;
-                    btn.addEventListener('click', () => { 
-                        if (builderCleanup) builderCleanup(); 
-                        startGame(levelData, 'menu'); 
-                    });
-                    levelSelectList.appendChild(btn);
-                });
-            } else if (levelsFound) {
-                levelSelectList.innerHTML = '<p>No levels found. Try another search.</p>';
-            } else {
-                levelSelectList.innerHTML = '<p>No custom levels found.</p>';
-            }
-        }
-        
-        levelSearch.addEventListener('input', loadLevelList);
-        
-        if (localStorage.length <= 1) {
-            const demoLevel = {
-                name: "Demo Level",
-                cubes: [{ x: 100, y: 350, width: 40, height: 40 }, { x: 250, y: 350, width: 40, height: 40 }, 
-                        { x: 400, y: 280, width: 40, height: 40 }, { x: 580, y: 220, width: 40, height: 40 }, 
-                        { x: 700, y: 350, width: 40, height: 40 }],
-                deathCubes: [{ x: 200, y: 330, width: 40, height: 40 }, { x: 330, y: 330, width: 40, height: 40 }, 
-                             { x: 480, y: 330, width: 40, height: 40 }, { x: 660, y: 330, width: 40, height: 40 }],
-                portals: [{ x: 750, y: 300, width: 40, height: 50 }],
-                winPortals: [],
-                springs: [{ x: 150, y: 360, width: 40, height: 10 }],
-                movingCubes: []
-            };
-            localStorage.setItem('level_Demo Level', JSON.stringify(demoLevel));
         }
     </script>
 </body>
