@@ -2,31 +2,44 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Прыгающий попап</title>
+    <title>Game Over</title>
     <style>
         body {
-            text-align: center;
             margin: 0;
-            padding: 10px;
+            padding: 0;
+            width: 300px;
+            height: 200px;
+            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjZmN3FqNzNlZ2FqM2Z4a2x3bnR3a3M4aXQ4c3hiaXJ4a2p2bWZkbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Ju7l5y9osyymQ/giphy.gif');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-shadow: 2px 2px 4px #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
             font-family: sans-serif;
-            user-select: none; /* Запрещаем выделение текста для удобства */
         }
         button {
             cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: 1px solid white;
+            padding: 5px 10px;
         }
     </style>
 </head>
 <body>
-
-    <h3>Кликни на меня!</h3>
+    <h3>GAME OVER</h3>
     <button onclick="window.close()">Закрыть</button>
+    <audio src="https://www.myinstants.com/media/sounds/virus-sound.mp3"></audio>
 
     <script>
-        // Начальные координаты и скорость
         let x = 100;
         let y = 100;
-        let vx = 5; 
-        let vy = 3; 
+        let vx = 5;
+        let vy = 3;
 
         function animate() {
             const screenWidth = screen.availWidth;
@@ -48,28 +61,18 @@
             requestAnimationFrame(animate);
         }
 
-        // Запускаем анимацию при загрузке окна
         window.onload = function() {
             x = Math.random() * (screen.availWidth - 300);
             y = Math.random() * (screen.availHeight - 200);
             animate();
+            document.querySelector('audio').play();
 
-            // === НОВЫЙ КОД ===
-            // Добавляем обработчик клика на всё окно
             window.addEventListener('click', function(event) {
-                // Проверяем, был ли клик по кнопке "Закрыть"
-                // Если да, то не открываем новое окно
                 if (event.target.tagName !== 'BUTTON') {
-                    // Открываем новый попап с УНИКАЛЬНЫМ именем (используем время)
-                    window.open(
-                        'popup.html', // Открываем сам себя
-                        'popup_' + Date.now(), // Уникальное имя, чтобы окна не заменяли друг друга
-                        'width=300,height=200'
-                    );
+                    window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
                 }
             });
         };
     </script>
-
 </body>
 </html>
