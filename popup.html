@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Game Over</title>
@@ -21,18 +21,10 @@
             user-select: none;
             font-family: sans-serif;
         }
-        button {
-            cursor: pointer;
-            background: rgba(0,0,0,0.5);
-            color: white;
-            border: 1px solid white;
-            padding: 5px 10px;
-        }
     </style>
 </head>
 <body>
     <h3>GAME OVER</h3>
-    <button onclick="window.close()">Закрыть</button>
     <audio src="https://www.myinstants.com/media/sounds/virus-sound.mp3"></audio>
 
     <script>
@@ -67,10 +59,8 @@
             animate();
             document.querySelector('audio').play();
 
-            window.addEventListener('click', function(event) {
-                if (event.target.tagName !== 'BUTTON') {
-                    window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
-                }
+            window.addEventListener('click', function() {
+                window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
             });
         };
     </script>
