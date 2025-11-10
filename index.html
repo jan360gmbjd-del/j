@@ -56,7 +56,7 @@
             cursor: default;
         }
         #level-builder-screen {
-            overflow-x: auto; /* Allow horizontal scrolling for long levels */
+            overflow-x: auto;
             width: 100%;
         }
         #level-builder-screen canvas {
@@ -241,7 +241,7 @@
         let animationId;
         let currentLevel = {};
         let isGameOver = false;
-        let gameSource = ''; // 'menu' or 'editor'
+        let gameSource = '';
 
         const defaultLevel = {
             name: "Level 1 - Hard",
@@ -254,7 +254,6 @@
             document.querySelectorAll('.screen').forEach(screen => screen.classList.add('hidden'));
             screenToShow.classList.remove('hidden');
 
-            // Handle mobile controls visibility
             if (isMobileDevice && screenToShow === gameScreen) {
                 mobileControls.classList.remove('hidden');
             } else {
@@ -262,7 +261,9 @@
             }
         }
 
-        agreeBtn.addEventListener('click', () => showScreen(agreeScreen));
+        // --- THIS LINE WAS THE BUG ---
+        agreeBtn.addEventListener('click', () => showScreen(menuScreen));
+        
         playBtn.addEventListener('click', () => startGame(defaultLevel, 'menu'));
         onlineBtn.addEventListener('click', () => showScreen(onlineMenuScreen));
         backFromOnlineBtn.addEventListener('click', () => showScreen(menuScreen));
@@ -452,7 +453,6 @@
             const builderCanvas = document.getElementById('builderCanvas'); const ctx = builderCanvas.getContext('2d');
             ctx.clearRect(0, 0, builderCanvas.width, builderCanvas.height);
             
-            // Draw Grid
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
             ctx.lineWidth = 1;
             for (let x = 0; x <= builderCanvas.width; x += GRID_SIZE) {
