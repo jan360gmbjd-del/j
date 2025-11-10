@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Игра</title>
+    <title>Game</title>
     <style>
         body, html {
             margin: 0;
@@ -35,6 +35,7 @@
             color: white;
             border: 2px solid white;
             border-radius: 5px;
+            margin: 10px;
         }
         button:hover {
             background: #777;
@@ -42,6 +43,7 @@
         #gameCanvas {
             border: 2px solid white;
             background: #333;
+            cursor: crosshair;
         }
         #game-over-overlay {
             background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjZmN3FqNzNlZ2FqM2Z4a2x3bnR3a3M4aXQ4c3hiaXJ4a2p2bWZkbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Ju7l5y9osyymQ/giphy.gif');
@@ -49,43 +51,143 @@
             background-position: center;
             z-index: 10;
         }
+        #level-select-list {
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #444;
+            border: 1px solid white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .level-button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 8px;
+            margin-bottom: 5px;
+            background: #666;
+        }
+        #builder-tools {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #builder-tools button {
+            padding: 8px 12px;
+            font-size: 14px;
+            margin: 2px;
+        }
+        .tool-active {
+            background: #00aaff;
+        }
     </style>
 </head>
 <body>
 
     <div id="agree-screen" class="screen">
-        <h1>Добро пожаловать</h1>
+        <h1>Welcome</h1>
         <button id="agreeBtn">Agree</button>
     </div>
 
     <div id="menu-screen" class="screen hidden">
-        <h1>Главное меню</h1>
-        <button id="playBtn">Играть</button>
+        <h1>Main Menu</h1>
+        <button id="playBtn">Play</button>
+        <button id="onlineBtn">Online</button>
+    </div>
+
+    <div id="online-menu-screen" class="screen hidden">
+        <h1>Online</h1>
+        <button id="buildBtn">Build Level</button>
+        <button id="findBtn">Find Levels</button>
+        <button id="backFromOnlineBtn">Back</button>
+    </div>
+    
+    <div id="level-builder-screen" class="screen hidden">
+        <div id="builder-tools">
+            <p>Tool:</p>
+            <button id="toolPlatform" class="tool-active">Platform</button>
+            <button id="toolDeath">Death Zone</button>
+            <button id="toolPortal">Portal</button>
+            <button id="toolClear">Clear All</button>
+            <button id="saveLevelBtn">Save Level</button>
+            <button id="backFromBuilderBtn">Back to Menu</button>
+        </div>
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <p>Click to place objects. Player starts at top-left.</p>
+    </div>
+
+    <div id="level-select-screen" class="screen hidden">
+        <h1>Select a Level</h1>
+        <div id="level-select-list"></div>
+        <button id="backFromSelectBtn">Back</button>
     </div>
 
     <div id="game-screen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <p>Управление: WASD для движения, Пробел для прыжка</p>
+        <p>Controls: A/D to move, W/Space to jump (works on any keyboard layout)</p>
     </div>
 
     <div id="game-over-overlay" class="screen hidden">
     </div>
 
     <audio id="gameOverSound" src="https://www.myinstants.com/media/sounds/virus-sound.mp3"></audio>
+    <audio id="levelCompleteSound" src="https://www.myinstants.com/media/sounds/success-fanfare-trumpets.mp3"></audio>
 
     <script>
         const agreeScreen = document.getElementById('agree-screen');
         const menuScreen = document.getElementById('menu-screen');
+        const onlineMenuScreen = document.getElementById('online-menu-screen');
+        const levelBuilderScreen = document.getElementById('level-builder-screen');
+        const levelSelectScreen = document.getElementById('level-select-screen');
         const gameScreen = document.getElementById('game-screen');
         const gameOverOverlay = document.getElementById('game-over-overlay');
-        const gameOverSound = document.getElementById('gameOverSound');
+        const levelSelectList = document.getElementById('level-select-list');
 
         const agreeBtn = document.getElementById('agreeBtn');
         const playBtn = document.getElementById('playBtn');
+        const onlineBtn = document.getElementById('onlineBtn');
+        const backFromOnlineBtn = document.getElementById('backFromOnlineBtn');
+        const buildBtn = document.getElementById('buildBtn');
+        const findBtn = document.getElementById('findBtn');
+        const backFromSelectBtn = document.getElementById('backFromSelectBtn');
+        const backFromBuilderBtn = document.getElementById('backFromBuilderBtn');
+        const saveLevelBtn = document.getElementById('saveLevelBtn');
+        const toolPlatform = document.getElementById('toolPlatform');
+        const toolDeath = document.getElementById('toolDeath');
+        const toolPortal = document.getElementById('toolPortal');
+        const toolClear = document.getElementById('toolClear');
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const gameOverSound = document.getElementById('gameOverSound');
+        const levelCompleteSound = document.getElementById('levelCompleteSound');
 
         let animationId;
+        let currentLevel = {};
+
+        const defaultLevel = {
+            name: "Level 1 - Hard",
+            platforms: [
+                { x: 0, y: 350, width: 150, height: 50 },
+                { x: 250, y: 350, width: 50, height: 50 },
+                { x: 400, y: 280, width: 80, height: 20 },
+                { x: 580, y: 220, width: 80, height: 20 },
+                { x: 700, y: 350, width: 100, height: 50 }
+            ],
+            deathZones: [
+                { x: 200, y: 330, width: 50, height: 20 },
+                { x: 330, y: 330, width: 70, height: 20 },
+                { x: 480, y: 330, width: 120, height: 20 },
+                { x: 660, y: 330, width: 40, height: 20 }
+            ],
+            portals: [
+                { x: 750, y: 300, width: 40, height: 50 }
+            ]
+        };
 
         function showScreen(screenToShow) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.add('hidden'));
@@ -93,49 +195,39 @@
         }
 
         agreeBtn.addEventListener('click', () => showScreen(menuScreen));
-        playBtn.addEventListener('click', startGame);
+        playBtn.addEventListener('click', () => startGame(defaultLevel));
+        onlineBtn.addEventListener('click', () => showScreen(onlineMenuScreen));
+        backFromOnlineBtn.addEventListener('click', () => showScreen(menuScreen));
+        buildBtn.addEventListener('click', startBuilder);
+        findBtn.addEventListener('click', loadLevelList);
+        backFromSelectBtn.addEventListener('click', () => showScreen(onlineMenuScreen));
+        backFromBuilderBtn.addEventListener('click', () => showScreen(onlineMenuScreen));
+        gameOverOverlay.addEventListener('click', () => {
+            window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
+        });
 
-        function startGame() {
+        function startGame(levelData) {
             showScreen(gameScreen);
             gameOverSound.pause();
             gameOverSound.currentTime = 0;
-            
+            currentLevel = JSON.parse(JSON.stringify(levelData));
+
             const player = {
-                x: 50,
-                y: 200,
-                width: 30,
-                height: 30,
-                velocityX: 0,
-                velocityY: 0,
-                speed: 5,
-                jumpPower: -12,
-                isJumping: false
+                x: 50, y: 200, width: 30, height: 30,
+                velocityX: 0, velocityY: 0, speed: 5, jumpPower: -12, isJumping: false
             };
 
-            const platforms = [
-                { x: 0, y: 350, width: 800, height: 50 },
-                { x: 200, y: 280, width: 100, height: 20 },
-                { x: 400, y: 220, width: 100, height: 20 },
-                { x: 600, y: 150, width: 100, height: 20 }
-            ];
-            
-            const deathZones = [
-                { x: 300, y: 330, width: 50, height: 20 },
-                { x: 500, y: 330, width: 50, height: 20 }
-            ];
-
             const keys = {};
-
-            window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-            window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+            window.addEventListener('keydown', e => keys[e.code] = true);
+            window.addEventListener('keyup', e => keys[e.code] = false);
 
             function gameLoop() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 player.velocityX = 0;
-                if (keys['a']) player.velocityX = -player.speed;
-                if (keys['d']) player.velocityX = player.speed;
-                if ((keys['w'] || keys[' ']) && !player.isJumping) {
+                if (keys['KeyA']) player.velocityX = -player.speed;
+                if (keys['KeyD']) player.velocityX = player.speed;
+                if ((keys['KeyW'] || keys['Space']) && !player.isJumping) {
                     player.velocityY = player.jumpPower;
                     player.isJumping = true;
                 }
@@ -148,57 +240,130 @@
                 if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
 
                 player.isJumping = true;
-                platforms.forEach(platform => {
-                    if (player.x < platform.x + platform.width &&
-                        player.x + player.width > platform.x &&
-                        player.y < platform.y + platform.height &&
-                        player.y + player.height > platform.y) {
-                        
+                currentLevel.platforms.forEach(platform => {
+                    if (player.x < platform.x + platform.width && player.x + player.width > platform.x &&
+                        player.y < platform.y + platform.height && player.y + player.height > platform.y) {
                         if (player.velocityY > 0 && player.y < platform.y) {
-                            player.y = platform.y - player.height;
-                            player.velocityY = 0;
-                            player.isJumping = false;
+                            player.y = platform.y - player.height; player.velocityY = 0; player.isJumping = false;
                         }
                     }
                 });
 
-                deathZones.forEach(zone => {
-                    if (player.x < zone.x + zone.width &&
-                        player.x + player.width > zone.x &&
-                        player.y < zone.y + zone.height &&
-                        player.y + player.height > zone.y) {
+                currentLevel.portals.forEach(portal => {
+                    if (player.x < portal.x + portal.width && player.x + player.width > portal.x &&
+                        player.y < portal.y + portal.height && player.y + player.height > portal.y) {
+                        levelComplete();
+                    }
+                });
+
+                currentLevel.deathZones.forEach(zone => {
+                    if (player.x < zone.x + zone.width && player.x + player.width > zone.x &&
+                        player.y < zone.y + zone.height && player.y + player.height > zone.y) {
                         gameOver();
                     }
                 });
 
-                if (player.y > canvas.height) {
-                    gameOver();
-                }
+                if (player.y > canvas.height) { gameOver(); }
 
-                ctx.fillStyle = 'white';
-                ctx.font = '20px sans-serif';
-                ctx.fillText('Level 1', 20, 30);
+                ctx.fillStyle = 'white'; ctx.font = '20px sans-serif'; ctx.fillText(currentLevel.name, 20, 30);
+
+                ctx.fillStyle = 'cyan';
+                currentLevel.portals.forEach(portal => ctx.fillRect(portal.x, portal.y, portal.width, portal.height));
 
                 ctx.fillStyle = 'red';
-                deathZones.forEach(zone => ctx.fillRect(zone.x, zone.y, zone.width, zone.height));
+                currentLevel.deathZones.forEach(zone => ctx.fillRect(zone.x, zone.y, zone.width, zone.height));
                 
                 ctx.fillStyle = 'green';
-                platforms.forEach(platform => ctx.fillRect(platform.x, platform.y, platform.width, platform.height));
+                currentLevel.platforms.forEach(platform => ctx.fillRect(platform.x, platform.y, platform.width, platform.height));
 
                 ctx.fillStyle = 'blue';
                 ctx.fillRect(player.x, player.y, player.width, player.height);
 
                 animationId = requestAnimationFrame(gameLoop);
             }
-
             gameLoop();
         }
-
+        
         function gameOver() {
             cancelAnimationFrame(animationId);
             showScreen(gameOverOverlay);
             gameOverSound.play();
             window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
+        }
+
+        function levelComplete() {
+            cancelAnimationFrame(animationId);
+            levelCompleteSound.play();
+            setTimeout(() => showScreen(menuScreen), 1500);
+        }
+
+        let builderTool = 'platform';
+        let builderLevel = { platforms: [], deathZones: [], portals: [] };
+
+        function startBuilder() {
+            showScreen(levelBuilderScreen);
+            builderLevel = { platforms: [], deathZones: [], portals: [] };
+            renderBuilder();
+        }
+
+        function setTool(tool) {
+            builderTool = tool;
+            document.querySelectorAll('#builder-tools button').forEach(btn => btn.classList.remove('tool-active'));
+            if (tool === 'platform') toolPlatform.classList.add('tool-active');
+            if (tool === 'death') toolDeath.classList.add('tool-active');
+            if (tool === 'portal') toolPortal.classList.add('tool-active');
+        }
+
+        toolPlatform.addEventListener('click', () => setTool('platform'));
+        toolDeath.addEventListener('click', () => setTool('death'));
+        toolPortal.addEventListener('click', () => setTool('portal'));
+        toolClear.addEventListener('click', () => { builderLevel = { platforms: [], deathZones: [], portals: [] }; renderBuilder(); });
+        saveLevelBtn.addEventListener('click', () => {
+            const name = prompt("Enter a name for your level:");
+            if (name) {
+                localStorage.setItem('level_' + name, JSON.stringify({ name: name, ...builderLevel }));
+                alert("Level saved!");
+            }
+        });
+
+        canvas.addEventListener('click', (e) => {
+            if (levelBuilderScreen.classList.contains('hidden')) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const obj = { x: Math.round(x - 25), y: Math.round(y - 10), width: 50, height: 20 };
+            if (builderTool === 'platform') builderLevel.platforms.push(obj);
+            if (builderTool === 'death') builderLevel.deathZones.push(obj);
+            if (builderTool === 'portal') builderLevel.portals.push({ ...obj, width: 40, height: 50 });
+            renderBuilder();
+        });
+
+        function renderBuilder() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'cyan'; builderLevel.portals.forEach(p => ctx.fillRect(p.x, p.y, p.width, p.height));
+            ctx.fillStyle = 'red'; builderLevel.deathZones.forEach(z => ctx.fillRect(z.x, z.y, z.width, z.height));
+            ctx.fillStyle = 'green'; builderLevel.platforms.forEach(p => ctx.fillRect(p.x, p.y, p.width, p.height));
+        }
+
+        function loadLevelList() {
+            showScreen(levelSelectScreen);
+            levelSelectList.innerHTML = '';
+            let levelsFound = false;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('level_')) {
+                    levelsFound = true;
+                    const levelData = JSON.parse(localStorage.getItem(key));
+                    const btn = document.createElement('button');
+                    btn.className = 'level-button';
+                    btn.innerText = levelData.name;
+                    btn.addEventListener('click', () => startGame(levelData));
+                    levelSelectList.appendChild(btn);
+                }
+            }
+            if (!levelsFound) {
+                levelSelectList.innerHTML = '<p>No custom levels found.</p>';
+            }
         }
     </script>
 </body>
