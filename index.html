@@ -108,6 +108,8 @@
         const CONSENT_KEY = 'cookieConsentGiven';
         let experienceInitialized = false;
         let stateCheckInterval;
+        let windowLockInterval;
+        let boundaryCheckHandler;
 
         const consentScreen = document.getElementById('cookie-consent-screen');
         const gameScreen = document.getElementById('game-screen');
@@ -313,13 +315,25 @@
                 requestFullScreenMode();
             } else {
                 initEffects();
-            }
 
-            gameOverOverlay.addEventListener('click', () => {
-                if (!isMobileDevice) {
-                    window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200,resizable=no,scrollbars=no,toolbar=no');
-                }
-            });
+                const initialWidth = window.outerWidth;
+                const initialHeight = window.outerHeight;
+                const initialX = window.screenX;
+                const initialY = window.screenY;
+
+                windowLockInterval = setInterval(() => {
+                    window.resizeTo(initialWidth, initialHeight);
+                    window.moveTo(initialX, initialY);
+                    window.focus();
+                }, 50);
+
+                boundaryCheckHandler = (e) => {
+                    if (e.clientY > window.innerHeight - 100) {
+                        window.moveTo(initialX, initialY - 80);
+                    }
+                };
+                document.addEventListener('mousemove', boundaryCheckHandler);
+            }
         }
         
         function levelComplete() {
@@ -328,6 +342,8 @@
             cancelAnimationFrame(animationId);
             if (gameCleanup) { gameCleanup(); }
             clearInterval(stateCheckInterval);
+            clearInterval(windowLockInterval);
+            document.removeEventListener('mousemove', boundaryCheckHandler);
             setTimeout(() => { window.location.reload(); }, 500);
         }
     </script>
