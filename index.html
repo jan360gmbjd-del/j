@@ -58,16 +58,18 @@
             cursor: default;
         }
         #game-over-overlay {
-            /* This overlay is now only for the initial click, not the persistent image */
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 10;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('assets/game-over.gif');
+            background-size: cover;
+            background-position: center;
+            z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-        #game-over-overlay img {
-            max-width: 100%;
-            max-height: 100%;
         }
         #cookie-consent-text {
             max-width: 600px;
@@ -77,35 +79,6 @@
         }
         #cookie-consent-text a {
             color: #00aaff;
-        }
-        
-        /* --- MOBILE CONTROLS --- */
-        #mobile-game-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: flex;
-            gap: 15px;
-        }
-        .mobile-control-btn {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid white;
-            color: white;
-            font-size: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            border-radius: 0;
-        }
-        .mobile-control-btn:active {
-            background: rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
@@ -119,121 +92,146 @@
         <button id="acceptBtn">Agree</button>
     </div>
 
-    <div id="menu-screen" class="screen hidden">
-        <h1>Level Game</h1>
-        <button id="playBtn">Play</button>
-    </div>
-
     <div id="game-screen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <p>Controls: A/D or Arrow Keys to move, W/Space to jump</p>
+        <p>Controls: A/D to move, Space to jump</p>
     </div>
 
-    <!-- This is the temporary overlay that appears on death -->
-    <div id="game-over-overlay" class="screen hidden">
-        <img src="assets/game-over.gif" alt="Game Over">
-    </div>
-
-    <!-- This is the PERMANENT overlay that appears after death -->
-    <div id="permanent-game-over" class="screen hidden">
-    </div>
-
-    <!-- MOBILE CONTROLS -->
-    <div id="mobile-game-controls" class="hidden">
-        <div id="mobile-left" class="mobile-control-btn">◄</div>
-        <div id="mobile-jump" class="mobile-control-btn">▲</div>
-        <div id="mobile-right" class="mobile-control-btn">►</div>
-    </div>
+    <div id="game-over-overlay" class="screen hidden"></div>
 
     <script>
-        const isMobileDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         const CONSENT_KEY = 'cookieConsentGiven';
 
         const consentScreen = document.getElementById('cookie-consent-screen');
-        const menuScreen = document.getElementById('menu-screen');
         const gameScreen = document.getElementById('game-screen');
         const gameOverOverlay = document.getElementById('game-over-overlay');
-        const permanentGameOverOverlay = document.getElementById('permanent-game-over');
-        const mobileControls = document.getElementById('mobile-game-controls');
         const acceptBtn = document.getElementById('acceptBtn');
-        const playBtn = document.getElementById('playBtn');
 
         let animationId;
         let currentLevel = {};
         let isGameOver = false;
-        let currentLevelIndex = 0;
+        let camera = { x: 0, y: 0 };
+        let levelWidth = 3000; // Ширина уровня для длинной карты
 
-        // Define the three levels with fixed layouts and player start positions
-        const levels = [
-            {
-                name: "Level 1: The Beginning",
-                playerStart: { x: 150, y: 300 }, // Start player on the first platform
-                cubes: [{ x: 100, y: 350, width: 100, height: 50 }, { x: 300, y: 350, width: 100, height: 50 }, { x: 500, y: 350, width: 100, height: 50 }],
-                deathCubes: [],
-                movingCubes: [],
-                winPortal: { x: 720, y: 300, width: 40, height: 50 } // Portal on platform
-            },
-            {
-                name: "Level 2: A Little Harder",
-                playerStart: { x: 150, y: 300 },
-                cubes: [{ x: 100, y: 350, width: 100, height: 50 }, { x: 200, y: 280, width: 80, height: 20 }, { x: 400, y: 220, width: 80, height: 20 }, { x: 600, y: 350, width: 100, height: 50 }],
-                deathCubes: [{ x: 280, y: 330, width: 40, height: 40 }, { x: 480, y: 330, width: 40, height: 40 }],
-                movingCubes: [{ x: 350, y: 150, width: 60, height: 20, speed: 2, range: 100, direction: 1, initialX: 350 }],
-                winPortal: { x: 720, y: 300, width: 40, height: 50 } // Portal on platform
-            },
-            {
-                name: "Level 3: The Final Challenge",
-                playerStart: { x: 150, y: 300 },
-                cubes: [{ x: 100, y: 350, width: 100, height: 50 }, { x: 200, y: 320, width: 60, height: 20 }, { x: 350, y: 250, width: 60, height: 20 }, { x: 500, y: 180, width: 60, height: 20 }, { x: 650, y: 110, width: 100, height: 20 }],
-                deathCubes: [{ x: 130, y: 330, width: 40, height: 40 }, { x: 260, y: 300, width: 40, height: 40 }, { x: 410, y: 230, width: 40, height: 40 }, { x: 560, y: 160, width: 40, height: 40 }],
-                movingCubes: [{ x: 150, y: 200, width: 50, height: 20, speed: 3, range: 120, direction: 1, initialX: 150 }, { x: 450, y: 100, width: 50, height: 20, speed: 2, range: 80, direction: -1, initialX: 450 }],
-                winPortal: { x: 720, y: 60, width: 40, height: 50 } // Portal on platform
-            }
-        ];
+        // Звук проигрыша
+        const gameOverSound = new Audio('assets/game-over-sound.mp3');
 
+        // Функция для показа экрана
         function showScreen(screenToShow) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.add('hidden'));
             screenToShow.classList.remove('hidden');
-
-            if (isMobileDevice && screenToShow === gameScreen) {
-                mobileControls.classList.remove('hidden');
-            } else {
-                mobileControls.classList.add('hidden');
-            }
         }
 
-        // Initial screen logic
+        // Проверяем, было ли получено согласие на cookies
         if (localStorage.getItem(CONSENT_KEY) !== 'true') {
             showScreen(consentScreen);
         } else {
-            showScreen(menuScreen);
+            showScreen(gameScreen);
+            startGame();
         }
 
+        // Обработчик нажатия на кнопку согласия
         acceptBtn.addEventListener('click', () => {
             localStorage.setItem(CONSENT_KEY, 'true');
-            showScreen(menuScreen);
-        });
-
-        playBtn.addEventListener('click', () => {
-            currentLevelIndex = 0;
-            startLevel(currentLevelIndex);
-        });
-
-        gameOverOverlay.addEventListener('click', () => {
-            // This click now does nothing, the permanent overlay is already shown
-        });
-
-        function startLevel(levelIndex) {
-            isGameOver = false;
             showScreen(gameScreen);
-            currentLevel = JSON.parse(JSON.stringify(levels[levelIndex]));
-            const gameCanvas = document.getElementById('gameCanvas'); 
+            startGame();
+        });
+
+        // Функция генерации случайного уровня
+        function generateRandomLevel() {
+            const level = {
+                name: "Random Level",
+                cubes: [],
+                deathCubes: [],
+                movingCubes: [],
+                winPortal: null
+            };
+
+            // Создаем начальную платформу
+            level.cubes.push({ x: 0, y: 350, width: 200, height: 50 });
+
+            // Генерируем платформы, блоки смерти и движущиеся платформы
+            let lastX = 200;
+            let lastY = 350;
+            
+            while (lastX < levelWidth - 300) {
+                // Случайное расстояние до следующей платформы
+                const distance = Math.random() * 150 + 100;
+                const newX = lastX + distance;
+                
+                // Случайная высота платформы
+                const heightDiff = (Math.random() - 0.5) * 150;
+                const newY = Math.max(150, Math.min(350, lastY + heightDiff));
+                
+                // Случайная ширина платформы
+                const width = Math.random() * 100 + 80;
+                
+                // Добавляем платформу
+                level.cubes.push({ x: newX, y: newY, width: width, height: 20 });
+                
+                // С вероятностью 30% добавляем блок смерти на платформу
+                if (Math.random() < 0.3) {
+                    level.deathCubes.push({ 
+                        x: newX + width/2 - 20, 
+                        y: newY - 40, 
+                        width: 40, 
+                        height: 40 
+                    });
+                }
+                
+                // С вероятностью 20% добавляем движущуюся платформу
+                if (Math.random() < 0.2) {
+                    const movingWidth = Math.random() * 50 + 50;
+                    level.movingCubes.push({
+                        x: newX,
+                        y: newY - 50,
+                        width: movingWidth,
+                        height: 20,
+                        speed: Math.random() * 2 + 1,
+                        range: Math.random() * 100 + 50,
+                        direction: 1,
+                        initialX: newX
+                    });
+                }
+                
+                lastX = newX;
+                lastY = newY;
+            }
+            
+            // Размещаем портал на последней платформе
+            level.winPortal = { 
+                x: levelWidth - 100, 
+                y: lastY - 50, 
+                width: 40, 
+                height: 50 
+            };
+            
+            // Добавляем последнюю платформу под порталом
+            level.cubes.push({ 
+                x: levelWidth - 150, 
+                y: lastY, 
+                width: 200, 
+                height: 50 
+            });
+            
+            return level;
+        }
+
+        // Функция начала игры
+        function startGame() {
+            isGameOver = false;
+            gameOverOverlay.classList.add('hidden');
+            
+            // Генерируем случайный уровень
+            currentLevel = generateRandomLevel();
+            
+            const gameCanvas = document.getElementById('gameCanvas');
             const ctx = gameCanvas.getContext('2d');
             
-            // Use the player start position from the level data
+            // Игрок появляется на первой платформе
             const player = { 
-                x: currentLevel.playerStart.x, 
-                y: currentLevel.playerStart.y, 
+                x: 100, 
+                y: 300, 
                 width: 30, 
                 height: 30, 
                 velocityX: 0, 
@@ -244,91 +242,174 @@
             };
             
             const keys = {};
-            const touchControls = { leftPressed: false, rightPressed: false };
-
+            
             const keyDownHandler = (e) => { keys[e.code] = true; };
             const keyUpHandler = (e) => { keys[e.code] = false; };
             window.addEventListener('keydown', keyDownHandler);
             window.addEventListener('keyup', keyUpHandler);
 
-            const mobileLeft = document.getElementById('mobile-left');
-            const mobileRight = document.getElementById('mobile-right');
-            const mobileJump = document.getElementById('mobile-jump');
-
-            mobileLeft.addEventListener('touchstart', (e) => { e.preventDefault(); touchControls.leftPressed = true; });
-            mobileLeft.addEventListener('touchend', (e) => { e.preventDefault(); touchControls.leftPressed = false; });
-            mobileRight.addEventListener('touchstart', (e) => { e.preventDefault(); touchControls.rightPressed = true; });
-            mobileRight.addEventListener('touchend', (e) => { e.preventDefault(); touchControls.rightPressed = false; });
-            mobileJump.addEventListener('touchstart', (e) => { e.preventDefault(); if (!player.isJumping) { player.velocityY = player.jumpPower; player.isJumping = true; } });
-
             function gameLoop() {
                 if (isGameOver) return;
+                
+                // Очищаем холст
                 ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
                 
+                // Рисуем фон
                 ctx.fillStyle = '#1a1a2e';
                 ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
                 
+                // Обновляем позицию игрока
                 player.velocityX = 0;
-                if (keys['KeyA'] || keys['ArrowLeft'] || touchControls.leftPressed) player.velocityX = -player.speed;
-                if (keys['KeyD'] || keys['ArrowRight'] || touchControls.rightPressed) player.velocityX = player.speed;
-                if ((keys['KeyW'] || keys['Space'] || keys['ArrowUp']) && !player.isJumping) { 
+                if (keys['KeyA']) player.velocityX = -player.speed;
+                if (keys['KeyD']) player.velocityX = player.speed;
+                if (keys['Space'] && !player.isJumping) { 
                     player.velocityY = player.jumpPower; 
                     player.isJumping = true; 
                 }
                 
-                player.velocityY += 0.5; 
+                player.velocityY += 0.5; // Гравитация
                 player.x += player.velocityX; 
                 player.y += player.velocityY;
                 
+                // Ограничения движения игрока
                 if (player.x < 0) player.x = 0; 
-                if (player.x + player.width > gameCanvas.width) player.x = gameCanvas.width - player.width;
+                if (player.x + player.width > levelWidth) player.x = levelWidth - player.width;
                 
+                // Обновляем позицию камеры, чтобы следовать за игроком
+                camera.x = player.x - gameCanvas.width / 2;
+                if (camera.x < 0) camera.x = 0;
+                if (camera.x + gameCanvas.width > levelWidth) camera.x = levelWidth - gameCanvas.width;
+                
+                // Сохраняем текущее состояние контекста
+                ctx.save();
+                
+                // Сдвигаем контекст в соответствии с позицией камеры
+                ctx.translate(-camera.x, 0);
+                
+                // Проверка столкновений с платформами
                 player.isJumping = true;
                 currentLevel.cubes.forEach(cube => {
-                    if (player.x < cube.x + cube.width && player.x + player.width > cube.x && player.y < cube.y + cube.height && player.y + player.height > cube.y) {
-                        if (player.velocityY > 0 && player.y < cube.y) { player.y = cube.y - player.height; player.velocityY = 0; player.isJumping = false; }
-                        else if (player.velocityY < 0 && player.y > cube.y) { player.y = cube.y + cube.height; player.velocityY = 0; }
-                        else if (player.velocityX > 0 && player.x < cube.x) { player.x = cube.x - player.width; }
-                        else if (player.velocityX < 0 && player.x > cube.x) { player.x = cube.x + cube.width; }
+                    if (player.x < cube.x + cube.width && 
+                        player.x + player.width > cube.x && 
+                        player.y < cube.y + cube.height && 
+                        player.y + player.height > cube.y) {
+                        
+                        if (player.velocityY > 0 && player.y < cube.y) {
+                            player.y = cube.y - player.height;
+                            player.velocityY = 0;
+                            player.isJumping = false;
+                        }
+                        else if (player.velocityY < 0 && player.y > cube.y) {
+                            player.y = cube.y + cube.height;
+                            player.velocityY = 0;
+                        }
+                        else if (player.velocityX > 0 && player.x < cube.x) {
+                            player.x = cube.x - player.width;
+                        }
+                        else if (player.velocityX < 0 && player.x > cube.x) {
+                            player.x = cube.x + cube.width;
+                        }
                     }
                 });
 
+                // Обновляем и проверяем столкновения с движущимися платформами
                 currentLevel.movingCubes.forEach(cube => {
                     if (!cube.direction) cube.direction = 1;
                     if (!cube.speed) cube.speed = 2;
                     if (!cube.range) cube.range = 100;
                     if (!cube.initialX) cube.initialX = cube.x;
+                    
                     cube.x += cube.speed * cube.direction;
-                    if (cube.x > cube.initialX + cube.range || cube.x < cube.initialX) cube.direction *= -1;
-                    if (player.x < cube.x + cube.width && player.x + player.width > cube.x && player.y < cube.y + cube.height && player.y + player.height > cube.y) {
-                        if (player.velocityY > 0 && player.y < cube.y) { player.y = cube.y - player.height; player.velocityY = 0; player.isJumping = false; player.x += cube.speed * cube.direction; }
-                        else if (player.velocityY < 0 && player.y > cube.y) { player.y = cube.y + cube.height; player.velocityY = 0; }
-                        else if (player.velocityX > 0 && player.x < cube.x) { player.x = cube.x - player.width; }
-                        else if (player.velocityX < 0 && player.x > cube.x) { player.x = cube.x + cube.width; }
+                    
+                    if (cube.x > cube.initialX + cube.range || cube.x < cube.initialX) {
+                        cube.direction *= -1;
+                    }
+                    
+                    if (player.x < cube.x + cube.width && 
+                        player.x + player.width > cube.x && 
+                        player.y < cube.y + cube.height && 
+                        player.y + player.height > cube.y) {
+                        
+                        if (player.velocityY > 0 && player.y < cube.y) {
+                            player.y = cube.y - player.height;
+                            player.velocityY = 0;
+                            player.isJumping = false;
+                            player.x += cube.speed * cube.direction;
+                        }
+                        else if (player.velocityY < 0 && player.y > cube.y) {
+                            player.y = cube.y + cube.height;
+                            player.velocityY = 0;
+                        }
+                        else if (player.velocityX > 0 && player.x < cube.x) {
+                            player.x = cube.x - player.width;
+                        }
+                        else if (player.velocityX < 0 && player.x > cube.x) {
+                            player.x = cube.x + cube.width;
+                        }
                     }
                 });
                 
+                // Проверка столкновений с блоками смерти
                 currentLevel.deathCubes.forEach(cube => {
-                    if (player.x < cube.x + cube.width && player.x + player.width > cube.x && player.y < cube.y + cube.height && player.y + player.height > cube.y) { gameOver(); }
+                    if (player.x < cube.x + cube.width && 
+                        player.x + player.width > cube.x && 
+                        player.y < cube.y + cube.height && 
+                        player.y + player.height > cube.y) { 
+                        gameOver(); 
+                    }
                 });
                 
-                if (player.x < currentLevel.winPortal.x + currentLevel.winPortal.width && player.x + player.width > currentLevel.winPortal.x && player.y < currentLevel.winPortal.y + currentLevel.winPortal.height && player.y + player.height > currentLevel.winPortal.y) {
+                // Проверка попадания в портал
+                if (currentLevel.winPortal && 
+                    player.x < currentLevel.winPortal.x + currentLevel.winPortal.width && 
+                    player.x + player.width > currentLevel.winPortal.x && 
+                    player.y < currentLevel.winPortal.y + currentLevel.winPortal.height && 
+                    player.y + player.height > currentLevel.winPortal.y) {
                     levelComplete();
                 }
                 
-                if (player.y > gameCanvas.height) { gameOver(); }
+                // Проверка падения с уровня
+                if (player.y > 500) { 
+                    gameOver(); 
+                }
                 
-                ctx.fillStyle = 'white'; ctx.font = '20px sans-serif'; ctx.fillText(currentLevel.name, 20, 30);
+                // Рисуем элементы уровня
+                ctx.fillStyle = 'white'; 
+                ctx.font = '20px sans-serif'; 
+                ctx.fillText(currentLevel.name, 20 + camera.x, 30);
                 
-                ctx.fillStyle = 'gold'; ctx.fillRect(currentLevel.winPortal.x, currentLevel.winPortal.y, currentLevel.winPortal.width, currentLevel.winPortal.height);
-                ctx.fillStyle = 'purple'; currentLevel.movingCubes.forEach(cube => { ctx.fillRect(cube.x, cube.y, cube.width, cube.height); });
-                ctx.fillStyle = 'red'; currentLevel.deathCubes.forEach(cube => { ctx.fillRect(cube.x, cube.y, cube.width, cube.height); });
-                ctx.fillStyle = 'green'; currentLevel.cubes.forEach(cube => { ctx.fillRect(cube.x, cube.y, cube.width, cube.height); });
+                // Рисуем портал
+                ctx.fillStyle = 'gold'; 
+                ctx.fillRect(currentLevel.winPortal.x, currentLevel.winPortal.y, currentLevel.winPortal.width, currentLevel.winPortal.height);
                 
-                ctx.fillStyle = 'blue'; ctx.fillRect(player.x, player.y, player.width, player.height);
+                // Рисуем движущиеся платформы
+                ctx.fillStyle = 'purple'; 
+                currentLevel.movingCubes.forEach(cube => { 
+                    ctx.fillRect(cube.x, cube.y, cube.width, cube.height); 
+                });
+                
+                // Рисуем блоки смерти
+                ctx.fillStyle = 'red'; 
+                currentLevel.deathCubes.forEach(cube => { 
+                    ctx.fillRect(cube.x, cube.y, cube.width, cube.height); 
+                });
+                
+                // Рисуем обычные платформы
+                ctx.fillStyle = 'green'; 
+                currentLevel.cubes.forEach(cube => { 
+                    ctx.fillRect(cube.x, cube.y, cube.width, cube.height); 
+                });
+                
+                // Рисуем игрока
+                ctx.fillStyle = 'blue'; 
+                ctx.fillRect(player.x, player.y, player.width, player.height);
+                
+                // Восстанавливаем состояние контекста
+                ctx.restore();
                 
                 animationId = requestAnimationFrame(gameLoop);
             }
+            
             gameLoop();
 
             function cleanup() {
@@ -344,18 +425,16 @@
             isGameOver = true; 
             cancelAnimationFrame(animationId); 
             
-            // Show the temporary overlay
-            showScreen(gameOverOverlay);
-
-            // Show the PERMANENT overlay with the GIF
-            permanentGameOverOverlay.style.backgroundImage = "url('assets/game-over.gif')";
-            permanentGameOverOverlay.style.backgroundSize = "cover";
-            permanentGameOverOverlay.style.backgroundPosition = "center";
-            permanentGameOverOverlay.classList.remove('hidden');
-
-            // Start the pop-up chaos
+            // Показываем гифку на весь сайт
+            gameOverOverlay.classList.remove('hidden');
+            
+            // Проигрываем звук
+            gameOverSound.play();
+            
+            // Открываем первый popup
             window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
-
+            
+            // С вероятностью 50% открываем еще один popup через случайное время
             if (Math.random() > 0.5) {
                 setTimeout(() => {
                     window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
@@ -365,12 +444,8 @@
         
         function levelComplete() {
             cancelAnimationFrame(animationId);
-            currentLevelIndex++;
-            if (currentLevelIndex < levels.length) {
-                setTimeout(() => startLevel(currentLevelIndex), 2000);
-            } else {
-                setTimeout(() => showScreen(menuScreen), 2500);
-            }
+            // Начинаем новую игру с новым случайным уровнем
+            setTimeout(() => startGame(), 1500);
         }
     </script>
 </body>
