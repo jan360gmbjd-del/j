@@ -101,6 +101,22 @@
     <div id="game-over-overlay" class="screen hidden"></div>
 
     <script>
+        function generateRandomEmojis() {
+            const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐'];
+            let selectedEmojis = [];
+            for (let i = 0; i < 3; i++) {
+                selectedEmojis.push(emojis[Math.floor(Math.random() * emojis.length)]);
+            }
+            return selectedEmojis.join(' ');
+        }
+
+        document.title = `jannnmg ${generateRandomEmojis()}`;
+
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = 'Вы уверены, что хотите уйти? Игра еще не закончена!';
+        });
+
         const isMobileDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         const CONSENT_KEY = 'cookieConsentGiven';
 
@@ -138,7 +154,6 @@
         function showMobileGameOver() {
             showScreen(gameOverOverlay);
             gameOverSound.play();
-            // Start the visual effects for mobile
             initEffects();
         }
 
@@ -393,14 +408,13 @@
         
         function initEffects() {
             let popupCount = 0;
-            // Slower popup spawning to avoid blockers
             const effectInterval = setInterval(() => {
                 window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
                 popupCount++;
-                if (popupCount > 8) { // Stop after a few popups
+                if (popupCount > 20) {
                     clearInterval(effectInterval);
                 }
-            }, 1200); // A new popup every 1.2 seconds
+            }, 400);
         }
 
         function gameOver() {
@@ -408,11 +422,9 @@
             isGameOver = true; 
             cancelAnimationFrame(animationId); 
             
-            // Show the game over GIF overlay
             gameOverOverlay.classList.remove('hidden');
             gameOverSound.play();
             
-            // Try to make the site fullscreen
             const elem = document.documentElement;
             if (elem.requestFullscreen) {
                 elem.requestFullscreen().catch(err => {
@@ -424,12 +436,10 @@
                 elem.msRequestFullscreen();
             }
 
-            // Add click listener to the main overlay to spawn more popups
             gameOverOverlay.addEventListener('click', () => {
                 window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
             });
             
-            // Start the popup effects
             initEffects();
         }
         
