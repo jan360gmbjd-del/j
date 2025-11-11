@@ -7,15 +7,15 @@
     <style>
         body, html {
             margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            background-color: #222;
-            color: white;
-            -webkit-user-select: none;
-            user-select: none;
-        }
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Arial', sans-serif;
+        background-color: #222;
+        color: white;
+        -webkit-user-select: none;
+        user-select: none;
+    }
         .screen {
             position: absolute;
             top: 0;
@@ -81,14 +81,27 @@
             color: #00aaff;
         }
         /* --- MOBILE CONTROLS --- */
-        #mobile-game-controls {
+        #mobile-controls-container {
             position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px; /* Reserve space */
+            z-index: 100;
+            pointer-events: none; /* Allow clicks through the container itself */
+        }
+        #mobile-move-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        #mobile-jump-control {
+            position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 100;
-            display: flex;
-            gap: 15px;
         }
         .mobile-control-btn {
             width: 60px;
@@ -104,6 +117,7 @@
             -webkit-user-select: none;
             touch-action: manipulation;
             border-radius: 0;
+            pointer-events: auto; /* Re-enable pointer events for the buttons themselves */
         }
         .mobile-control-btn:active {
             background: rgba(255, 255, 255, 0.5);
@@ -122,16 +136,20 @@
 
     <div id="game-screen" class="screen hidden">
         <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <p>Controls: A/D to move, Space to jump</p>
+        <p id="controls-text">Controls: A/D to move, Space to jump</p>
     </div>
 
     <div id="game-over-overlay" class="screen hidden"></div>
 
     <!-- MOBILE CONTROLS -->
-    <div id="mobile-game-controls" class="hidden">
-        <div id="mobile-left" class="mobile-control-btn">◄</div>
-        <div id="mobile-jump" class="mobile-control-btn">▲</div>
-        <div id="mobile-right" class="mobile-control-btn">►</div>
+    <div id="mobile-controls-container" class="hidden">
+        <div id="mobile-move-controls">
+            <div id="mobile-left" class="mobile-control-btn">◄</div>
+            <div id="mobile-right" class="mobile-control-btn">►</div>
+        </div>
+        <div id="mobile-jump-control">
+            <div id="mobile-jump" class="mobile-control-btn">▲</div>
+        </div>
     </div>
 
     <script>
@@ -141,8 +159,9 @@
         const consentScreen = document.getElementById('cookie-consent-screen');
         const gameScreen = document.getElementById('game-screen');
         const gameOverOverlay = document.getElementById('game-over-overlay');
-        const mobileControls = document.getElementById('mobile-game-controls');
+        const mobileControlsContainer = document.getElementById('mobile-controls-container');
         const acceptBtn = document.getElementById('acceptBtn');
+        const controlsText = document.getElementById('controls-text');
 
         let animationId;
         let currentLevel = {};
@@ -156,6 +175,12 @@
         function showScreen(screenToShow) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.add('hidden'));
             screenToShow.classList.remove('hidden');
+
+            if (isMobileDevice && screenToShow === gameScreen) {
+                mobileControlsContainer.classList.remove('hidden');
+            } else {
+                mobileControlsContainer.classList.add('hidden');
+            }
         }
 
         showScreen(consentScreen);
@@ -274,6 +299,12 @@
             mobileRight.addEventListener('touchstart', (e) => { e.preventDefault(); touchControls.rightPressed = true; });
             mobileRight.addEventListener('touchend', (e) => { e.preventDefault(); touchControls.rightPressed = false; });
             mobileJump.addEventListener('touchstart', (e) => { e.preventDefault(); if (!player.isJumping) { player.velocityY = player.jumpPower; player.isJumping = true; } });
+
+            if (isMobileDevice) {
+                controlsText.textContent = 'Use on-screen buttons to move and jump';
+            } else {
+                controlsText.textContent = 'Controls: A/D to move, Space to jump';
+            }
 
             function gameLoop() {
                 if (isGameOver) return;
