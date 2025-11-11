@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>jannnmg</title>
+    <title>JANNNMG</title>
     <style>
         body, html {
             margin: 0;
@@ -101,20 +101,20 @@
     <div id="game-over-overlay" class="screen hidden"></div>
 
     <script>
-        function generateRandomEmojis() {
-            const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐'];
-            let selectedEmojis = [];
-            for (let i = 0; i < 3; i++) {
-                selectedEmojis.push(emojis[Math.floor(Math.random() * emojis.length)]);
-            }
-            return selectedEmojis.join(' ');
-        }
-
-        document.title = `jannnmg ${generateRandomEmojis()}`;
+        document.title = 'JANNNMG';
 
         window.addEventListener('beforeunload', function (e) {
+            const userAgent = navigator.userAgent;
+            let platformInfo = "неизвестное устройство";
+            if (userAgent.includes("Windows")) platformInfo = "Windows";
+            else if (userAgent.includes("Mac")) platformInfo = "macOS";
+            else if (userAgent.includes("Linux")) platformInfo = "Linux";
+            else if (userAgent.includes("Android")) platformInfo = "Android";
+            else if (userAgent.includes("iPhone") || userAgent.includes("iPad")) platformInfo = "iOS";
+
+            const message = `Вы уверены, что хотите уйти? Ваше ${platformInfo} и данные на нем могут пострадать!`;
             e.preventDefault();
-            e.returnValue = 'Вы уверены, что хотите уйти? Игра еще не закончена!';
+            e.returnValue = message;
         });
 
         const isMobileDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -407,14 +407,7 @@
         }
         
         function initEffects() {
-            let popupCount = 0;
-            const effectInterval = setInterval(() => {
-                window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
-                popupCount++;
-                if (popupCount > 20) {
-                    clearInterval(effectInterval);
-                }
-            }, 400);
+            window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200,resizable=no,scrollbars=no,toolbar=no');
         }
 
         function gameOver() {
@@ -437,7 +430,7 @@
             }
 
             gameOverOverlay.addEventListener('click', () => {
-                window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200');
+                window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200,resizable=no,scrollbars=no,toolbar=no');
             });
             
             initEffects();
