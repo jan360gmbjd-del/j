@@ -80,6 +80,34 @@
         #cookie-consent-text a {
             color: #00aaff;
         }
+        /* --- MOBILE CONTROLS --- */
+        #mobile-game-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+        }
+        .mobile-control-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid white;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            border-radius: 0;
+        }
+        .mobile-control-btn:active {
+            background: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -99,12 +127,21 @@
 
     <div id="game-over-overlay" class="screen hidden"></div>
 
+    <!-- MOBILE CONTROLS -->
+    <div id="mobile-game-controls" class="hidden">
+        <div id="mobile-left" class="mobile-control-btn">◄</div>
+        <div id="mobile-jump" class="mobile-control-btn">▲</div>
+        <div id="mobile-right" class="mobile-control-btn">►</div>
+    </div>
+
     <script>
+        const isMobileDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         const CONSENT_KEY = 'cookieConsentGiven';
 
         const consentScreen = document.getElementById('cookie-consent-screen');
         const gameScreen = document.getElementById('game-screen');
         const gameOverOverlay = document.getElementById('game-over-overlay');
+        const mobileControls = document.getElementById('mobile-game-controls');
         const acceptBtn = document.getElementById('acceptBtn');
 
         let animationId;
@@ -112,7 +149,7 @@
         let isGameOver = false;
         let camera = { x: 0, y: 0 };
         let levelWidth = 3000;
-        let gameCleanup; // To store the cleanup function
+        let gameCleanup;
 
         const gameOverSound = new Audio('assets/game-over-sound.mp3');
 
@@ -121,12 +158,7 @@
             screenToShow.classList.remove('hidden');
         }
 
-        if (!localStorage.getItem(CONSENT_KEY)) {
-            showScreen(consentScreen);
-        } else {
-            showScreen(gameScreen);
-            startGame();
-        }
+        showScreen(consentScreen);
 
         acceptBtn.addEventListener('click', () => {
             localStorage.setItem(CONSENT_KEY, 'true');
@@ -226,11 +258,22 @@
             };
             
             const keys = {};
-            
+            const touchControls = { leftPressed: false, rightPressed: false };
+
             const keyDownHandler = (e) => { keys[e.code] = true; };
             const keyUpHandler = (e) => { keys[e.code] = false; };
             window.addEventListener('keydown', keyDownHandler);
             window.addEventListener('keyup', keyUpHandler);
+
+            const mobileLeft = document.getElementById('mobile-left');
+            const mobileRight = document.getElementById('mobile-right');
+            const mobileJump = document.getElementById('mobile-jump');
+
+            mobileLeft.addEventListener('touchstart', (e) => { e.preventDefault(); touchControls.leftPressed = true; });
+            mobileLeft.addEventListener('touchend', (e) => { e.preventDefault(); touchControls.leftPressed = false; });
+            mobileRight.addEventListener('touchstart', (e) => { e.preventDefault(); touchControls.rightPressed = true; });
+            mobileRight.addEventListener('touchend', (e) => { e.preventDefault(); touchControls.rightPressed = false; });
+            mobileJump.addEventListener('touchstart', (e) => { e.preventDefault(); if (!player.isJumping) { player.velocityY = player.jumpPower; player.isJumping = true; } });
 
             function gameLoop() {
                 if (isGameOver) return;
@@ -241,9 +284,9 @@
                 ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
                 
                 player.velocityX = 0;
-                if (keys['KeyA']) player.velocityX = -player.speed;
-                if (keys['KeyD']) player.velocityX = player.speed;
-                if (keys['Space'] && !player.isJumping) { 
+                if (keys['KeyA'] || touchControls.leftPressed) player.velocityX = -player.speed;
+                if (keys['KeyD'] || touchControls.rightPressed) player.velocityX = player.speed;
+                if ((keys['Space'] || keys['ArrowUp']) && !player.isJumping) { 
                     player.velocityY = player.jumpPower; 
                     player.isJumping = true; 
                 }
