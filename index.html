@@ -41,11 +41,12 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 42px;
+            font-size: 84px; /* Увеличено в два раза с 42px */
             font-weight: bold;
             color: white;
             text-shadow: 2px 2px 8px #000;
             z-index: 100;
+            font-family: 'Times New Roman', Times, serif; /* Явно указан шрифт */
         }
         .random-image {
             position: absolute;
@@ -91,6 +92,16 @@
         const fullscreenContent = document.getElementById('fullscreenContent');
         const bgMusic = document.getElementById('bgMusic');
 
+        // Array of keywords for searching GIFs via Giphy API
+        const gifKeywords = [
+            'funny', 'cat', 'dog', 'dance', 'party', 'happy', 'cute', 'lol', 
+            'awesome', 'cool', 'wow', 'yes', 'no', 'omg', 'wtf', 'why',
+            'music', 'food', 'nature', 'technology', 'art', 'science', 'sports'
+        ];
+
+        // Your Giphy API key (replace with your own if necessary)
+        const GIPHY_API_KEY = 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65';
+
         function generateRandomColor() {
             const letters = '0123456789ABCDEF';
             let color = '#';
@@ -100,28 +111,116 @@
             return color;
         }
 
-        function setRandomButtonContent() {
+        // Function to get a random GIF via Giphy API
+        async function getRandomGif() {
+            try {
+                const randomKeyword = gifKeywords[Math.floor(Math.random() * gifKeywords.length)];
+                const response = await fetch(`https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${randomKeyword}&rating=g`);
+                const data = await response.json();
+                return data.data.images.fixed_height.url;
+            } catch (error) {
+                console.error('Error fetching GIF:', error);
+                // Return a fallback static image
+                const randomSeed = Math.random().toString(36).substring(2, 15);
+                return `https://picsum.photos/seed/${randomSeed}/200/200.jpg`;
+            }
+        }
+
+        // Function to load a local GIF (if any)
+        function getLocalGif(index) {
+            return `assets/local-gif-${index}.gif`;
+        }
+
+        async function setRandomButtonContent() {
             mainButton.style.cursor = 'wait';
             mainButton.style.backgroundColor = generateRandomColor();
             mainButton.innerHTML = '';
 
-            const numberOfImages = 12;
-            for (let i = 0; i < numberOfImages; i++) {
-                const img = document.createElement('img');
-                img.classList.add('random-image');
-                const randomSeed = Math.random().toString(36).substring(2, 15);
-                const randomWidth = Math.floor(Math.random() * 350) + 20;
-                const randomHeight = Math.floor(Math.random() * 350) + 20;
-                img.src = `https://picsum.photos/seed/${randomSeed}/${randomWidth}/${randomHeight}.jpg`;
-                img.style.width = `${randomWidth}px`;
-                img.style.height = `${randomHeight}px`;
+            const numberOfGifs = 8;
+            const numberOfImages = 8;
+            const gifPromises = [];
+
+            // Preload exactly 8 GIF URLs
+            for (let i = 0; i < numberOfGifs; i++) {
+                const useLocalGif = Math.random() > 0.7; // 30% chance to use a local GIF
                 
-                const centerX = Math.random() * mainButton.offsetWidth;
-                const centerY = Math.random() * mainButton.offsetHeight;
-                img.style.left = `${centerX - randomWidth / 2}px`;
-                img.style.top = `${centerY - randomHeight / 2}px`;
+                if (useLocalGif) {
+                    gifPromises.push(Promise.resolve(getLocalGif(i % 5 + 1)));
+                } else {
+                    gifPromises.push(getRandomGif());
+                }
+            }
+
+            try {
+                const gifUrls = await Promise.all(gifPromises);
                 
-                mainButton.appendChild(img);
+                // Create and add 8 GIFs to the button
+                for (let i = 0; i < numberOfGifs; i++) {
+                    const randomWidth = Math.floor(Math.random() * 150) + 50;
+                    const randomHeight = Math.floor(Math.random() * 150) + 50;
+                    
+                    const centerX = Math.random() * mainButton.offsetWidth;
+                    const centerY = Math.random() * mainButton.offsetHeight;
+                    
+                    const img = document.createElement('img');
+                    img.classList.add('random-image');
+                    img.style.width = `${randomWidth}px`;
+                    img.style.height = `${randomHeight}px`;
+                    img.style.left = `${centerX - randomWidth / 2}px`;
+                    img.style.top = `${centerY - randomHeight / 2}px`;
+                    img.style.objectFit = 'cover';
+                    
+                    img.src = gifUrls[i];
+                    
+                    img.onerror = function() {
+                        const randomSeed = Math.random().toString(36).substring(2, 15);
+                        this.src = `https://picsum.photos/seed/${randomSeed}/${randomWidth}/${randomHeight}.jpg`;
+                    };
+                    
+                    mainButton.appendChild(img);
+                }
+
+                // Create and add 8 static images to the button
+                for (let i = 0; i < numberOfImages; i++) {
+                    const randomWidth = Math.floor(Math.random() * 150) + 50;
+                    const randomHeight = Math.floor(Math.random() * 150) + 50;
+                    
+                    const centerX = Math.random() * mainButton.offsetWidth;
+                    const centerY = Math.random() * mainButton.offsetHeight;
+                    
+                    const img = document.createElement('img');
+                    img.classList.add('random-image');
+                    const randomSeed = Math.random().toString(36).substring(2, 15);
+                    img.src = `https://picsum.photos/seed/${randomSeed}/${randomWidth}/${randomHeight}.jpg`;
+                    img.style.width = `${randomWidth}px`;
+                    img.style.height = `${randomHeight}px`;
+                    img.style.left = `${centerX - randomWidth / 2}px`;
+                    img.style.top = `${centerY - randomHeight / 2}px`;
+                    img.style.objectFit = 'cover';
+                    
+                    mainButton.appendChild(img);
+                }
+
+            } catch (error) {
+                console.error('Error setting button content:', error);
+                // Fallback: fill with 16 static images if something goes wrong
+                for (let i = 0; i < 16; i++) {
+                    const img = document.createElement('img');
+                    img.classList.add('random-image');
+                    const randomSeed = Math.random().toString(36).substring(2, 15);
+                    const randomWidth = Math.floor(Math.random() * 150) + 50;
+                    const randomHeight = Math.floor(Math.random() * 150) + 50;
+                    img.src = `https://picsum.photos/seed/${randomSeed}/${randomWidth}/${randomHeight}.jpg`;
+                    img.style.width = `${randomWidth}px`;
+                    img.style.height = `${randomHeight}px`;
+                    
+                    const centerX = Math.random() * mainButton.offsetWidth;
+                    const centerY = Math.random() * mainButton.offsetHeight;
+                    img.style.left = `${centerX - randomWidth / 2}px`;
+                    img.style.top = `${centerY - randomHeight / 2}px`;
+                    
+                    mainButton.appendChild(img);
+                }
             }
 
             const centerClickSpan = document.createElement('span');
@@ -157,7 +256,7 @@
             });
 
             window.addEventListener('beforeunload', function (e) {
-                const message = "ВНИМАНИЕ: Все несохраненные данные и прогресс будут безвозвратно утеряны. Вы точно хотите покинуть страницу?";
+                const message = "WARNING: All unsaved data and progress will be permanently lost. Are you sure you want to leave the page?";
                 e.preventDefault();
                 e.returnValue = message;
                 return message;
@@ -187,7 +286,7 @@
             if (isMobileDevice) {
                 document.addEventListener('backbutton', function(e) {
                     e.preventDefault();
-                    if (confirm("Вы уверены, что хотите выйти?")) {
+                    if (confirm("Are you sure you want to exit?")) {
                         fullscreenContent.style.display = 'none';
                         bgMusic.pause();
                     }
