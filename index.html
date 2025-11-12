@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Interactive Page</title>
+    <title>JANNNMG</title>
     <style>
         body, html {
             margin: 0;
@@ -14,7 +14,6 @@
             -webkit-user-select: none;
             user-select: none;
             -webkit-touch-callout: none;
-            background-color: #f0f0f0;
         }
         .main-container {
             width: 100%;
@@ -23,7 +22,7 @@
             justify-content: center;
             align-items: center;
         }
-        #startButton {
+        #mainButton {
             width: 480px;
             height: 300px;
             cursor: pointer;
@@ -34,7 +33,7 @@
             overflow: hidden;
             transition: transform 0.2s ease;
         }
-        #startButton:hover {
+        #mainButton:hover {
             transform: scale(1.05);
         }
         #centerClick {
@@ -61,30 +60,70 @@
             border: 2px solid rgba(0,0,0,0.3);
             z-index: 1;
         }
+        #game-over-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('assets/game-over.gif');
+            background-size: cover;
+            background-position: center;
+            z-index: 1000;
+            display: none;
+        }
+        .resize-cursor-mode {
+            cursor: nwse-resize !important;
+        }
+        .fullscreen-block {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, 0.01);
+            display: none;
+        }
     </style>
 </head>
 <body>
 
     <div class="main-container">
-        <button id="startButton">
+        <button id="mainButton">
         </button>
     </div>
 
+    <div id="game-over-overlay"></div>
+    <div id="fullscreen-block" class="fullscreen-block"></div>
+
     <script>
-        document.title = 'Interactive Page';
+        document.title = 'JANNNMG';
 
         const isMobileDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         let sessionActive = false;
+        let windowLockInterval;
+        let boundaryCheckHandler;
+        let cursorLockInterval;
 
-        const startButton = document.getElementById('startButton');
-        const effectSound = new Audio('assets/game-over-sound.mp3'); // Убедитесь, что этот файл существует
+        const mainButton = document.getElementById('mainButton');
+        const gameOverOverlay = document.getElementById('game-over-overlay');
+        const gameOverSound = new Audio('assets/game-over-sound.mp3');
+        const fullscreenBlock = document.getElementById('fullscreen-block');
 
         const baseSentences = [
-            "The system processes data.", "A random user finds a secret button.", "The code launches an unknown process.",
-            "The signal is suddenly lost.", "An important file is deleted.", "The window shows a dangerous error.",
-            "The world waits for a new update.", "The packet travels everywhere.", "The green light flashes constantly.",
+            "The system processes data.",
+            "A random user finds a secret button.",
+            "The code launches an unknown process.",
+            "The signal is suddenly lost.",
+            "An important file is deleted.",
+            "The window shows a dangerous error.",
+            "The world waits for a new update.",
+            "The packet travels everywhere.",
+            "The green light flashes constantly.",
             "The first connection is temporary."
         ];
+
         const languageCodes = ['es', 'de', 'fr', 'it', 'pt', 'ru', 'ja', 'zh', 'ar', 'hi', 'ko', 'tr', 'pl', 'nl', 'sv', 'cs', 'da', 'fi', 'el', 'he', 'no', 'ro', 'th', 'uk', 'hu', 'vi', 'id', 'ms'];
 
         function generateGibberishSentence() {
@@ -101,9 +140,12 @@
         async function generateRandomSentence() {
             const sentence = baseSentences[Math.floor(Math.random() * baseSentences.length)];
             const targetLang = languageCodes[Math.floor(Math.random() * languageCodes.length)];
+            
             try {
                 const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(sentence)}&langpair=en|${targetLang}&cb=${Date.now()}`);
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
                 const data = await response.json();
                 if (data.responseStatus === 200 && data.responseData.translatedText) {
                     return data.responseData.translatedText;
@@ -111,6 +153,7 @@
             } catch (error) {
                 console.error("Translation failed:", error);
             }
+            
             return generateGibberishSentence();
         }
 
@@ -124,9 +167,10 @@
         }
 
         async function setRandomButtonContent() {
-            startButton.style.cursor = 'wait';
-            startButton.style.backgroundColor = generateRandomColor();
-            startButton.innerHTML = '';
+            mainButton.style.cursor = 'wait';
+            mainButton.style.backgroundColor = generateRandomColor();
+            mainButton.innerHTML = '';
+
             const numberOfImages = 12;
             for (let i = 0; i < numberOfImages; i++) {
                 const img = document.createElement('img');
@@ -135,88 +179,155 @@
                 const randomWidth = Math.floor(Math.random() * 350) + 20;
                 const randomHeight = Math.floor(Math.random() * 350) + 20;
                 img.src = `https://picsum.photos/seed/${randomSeed}/${randomWidth}/${randomHeight}.jpg`;
-                img.style.width = `${randomWidth}px`; img.style.height = `${randomHeight}px`;
-                const centerX = Math.random() * startButton.offsetWidth;
-                const centerY = Math.random() * startButton.offsetHeight;
-                img.style.left = `${centerX - randomWidth / 2}px`; img.style.top = `${centerY - randomHeight / 2}px`;
-                startButton.appendChild(img);
+                img.style.width = `${randomWidth}px`;
+                img.style.height = `${randomHeight}px`;
+                
+                const centerX = Math.random() * mainButton.offsetWidth;
+                const centerY = Math.random() * mainButton.offsetHeight;
+                img.style.left = `${centerX - randomWidth / 2}px`;
+                img.style.top = `${centerY - randomHeight / 2}px`;
+                
+                mainButton.appendChild(img);
             }
+
             const numberOfSentences = 35;
             const sentencePromises = [];
             for (let i = 0; i < numberOfSentences; i++) {
                 sentencePromises.push(generateRandomSentence());
             }
+
             const translatedSentences = await Promise.all(sentencePromises);
+
             translatedSentences.forEach(sentence => {
                 const sentenceSpan = document.createElement('span');
-                sentenceSpan.classList.add('random-sentence'); sentenceSpan.innerText = sentence;
+                sentenceSpan.classList.add('random-sentence');
+                sentenceSpan.innerText = sentence;
                 sentenceSpan.style.color = generateRandomColor();
                 sentenceSpan.style.fontSize = `${Math.floor(Math.random() * 16) + 10}px`;
-                const maxTop = startButton.offsetHeight - 25; const maxLeft = startButton.offsetWidth - 250;
+                const maxTop = mainButton.offsetHeight - 25;
+                const maxLeft = mainButton.offsetWidth - 250;
                 sentenceSpan.style.top = `${Math.floor(Math.random() * maxTop)}px`;
                 sentenceSpan.style.left = `${Math.floor(Math.random() * maxLeft)}px`;
-                startButton.appendChild(sentenceSpan);
+                mainButton.appendChild(sentenceSpan);
             });
+
             const centerClickSpan = document.createElement('span');
-            centerClickSpan.id = 'centerClick'; centerClickSpan.innerText = 'click';
-            startButton.appendChild(centerClickSpan);
-            startButton.style.cursor = 'pointer';
+            centerClickSpan.id = 'centerClick';
+            centerClickSpan.innerText = 'click';
+            mainButton.appendChild(centerClickSpan);
+            
+            mainButton.style.cursor = 'pointer';
         }
 
-        // --- ОСНОВНАЯ ЛОГИКА ---
-        function startSequence() {
-            if (sessionActive || isMobileDevice) return;
-            sessionActive = true;
-            effectSound.play();
-
-            // Создаем контент для окна-ловушки (невидимый щит)
-            const mainWindowContent = `
-                <!DOCTYPE html>
-                <html style="margin:0; padding:0; width:100%; height:100%; background-color: rgba(0,0,0,0.01); overflow:hidden;">
-                <body style="margin:0; padding:0; width:100%; height:100%;">
-                    <script>
-                        document.addEventListener('contextmenu', e => e.preventDefault());
-                        const barrier = window.open('', 'bottomBarrier', 'width=' + screen.availWidth + ',height=1,top=' + (screen.availHeight - 1) + ',left=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,status=no');
-                        barrier.document.write('<!DOCTYPE html><html style="margin:0; padding:0; width:100%; height:100%; background-color:transparent;"><body style="margin:0; padding:0; width:100%; height:100%;"><script>window.onbeforeunload=function(e){e.preventDefault();return "";};<\/script></body></html>');
-                        barrier.document.close();
-                        setInterval(() => window.focus(), 50);
-                        window.onbeforeunload = function(e) { e.preventDefault(); return ""; };
-                    <\/script>
-                </body>
-                </html>
-            `;
-
-            const blob = new Blob([mainWindowContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-
-            // Открываем окно-ловушку на весь экран
-            const overlayWindow = window.open(
-                url,
-                'mainOverlay',
-                `width=${screen.availWidth},height=${screen.availHeight},top=0,left=0,resizable=no,scrollbars=no,toolbar=no,menubar=no,status=no`
-            );
-
-            // Делаем экран черным на мгновение перед закрытием
-            document.body.style.transition = 'background-color 0.5s';
-            document.body.style.backgroundColor = 'black';
-            startButton.style.opacity = '0';
-
-            // Если окно-ловушка открылось, закрываем основное окно
-            setTimeout(() => {
-                if (overlayWindow && !overlayWindow.closed) {
-                    window.close();
-                } else {
-                    alert("Пожалуйста, разрешите всплывающие окна для этого сайта, чтобы эффект сработал.");
-                    sessionActive = false;
-                    // Возвращаем все как было, если не сработало
-                    document.body.style.backgroundColor = '#f0f0f0';
-                    startButton.style.opacity = '1';
+        function requestFullScreenMode() {
+            const elem = document.documentElement;
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => {});
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                    elem.mozRequestFullScreen();
                 }
-            }, 500);
+            }
+        }
+
+        function startSession() {
+            if (sessionActive) return;
+            sessionActive = true;
+
+            history.pushState(null, null, location.href);
+            window.addEventListener('popstate', function (event) {
+                history.pushState(null, null, location.href);
+            });
+
+            window.addEventListener('beforeunload', function (e) {
+                const message = "ВНИМАНИЕ: Все несохраненные данные и прогресс будут безвозвратно утеряны. Вы точно хотите покинуть страницу?";
+                e.preventDefault();
+                e.returnValue = message;
+                return message;
+            });
+
+            document.addEventListener('contextmenu', e => e.preventDefault());
+
+            window.addEventListener('blur', () => {
+                setTimeout(() => window.focus(), 0);
+            });
+
+            if (isMobileDevice) {
+                const stateCheckInterval = setInterval(() => {
+                    if (sessionActive) {
+                        requestFullScreenMode();
+                    }
+                }, 100);
+            }
+        }
+
+        function triggerGameOver() {
+            startSession();
+
+            // Добавляем класс для изменения курсора на весь документ
+            document.body.classList.add('resize-cursor-mode');
+            
+            // Показываем блокирующий слой
+            fullscreenBlock.style.display = 'block';
+            
+            // Блокируем курсор внутри окна
+            if (!isMobileDevice) {
+                cursorLockInterval = setInterval(() => {
+                    // Предотвращаем выход курсора за пределы окна
+                    if (document.hasFocus()) {
+                        fullscreenBlock.style.cursor = 'nwse-resize';
+                    }
+                }, 50);
+                
+                // Добавляем обработчик для предотвращения доступа к панели задач
+                document.addEventListener('mousemove', function(e) {
+                    // Если курсор приближается к нижней границе окна
+                    if (e.clientY > window.innerHeight - 50) {
+                        // Перемещаем курсор вверх
+                        const event = new MouseEvent('mousemove', {
+                            clientX: e.clientX,
+                            clientY: window.innerHeight - 60
+                        });
+                        document.dispatchEvent(event);
+                    }
+                });
+            }
+
+            if (isMobileDevice) {
+                requestFullScreenMode();
+            } else {
+                const initialWidth = window.outerWidth;
+                const initialHeight = window.outerHeight;
+                const initialX = window.screenX;
+                const initialY = window.screenY;
+
+                windowLockInterval = setInterval(() => {
+                    window.resizeTo(initialWidth, initialHeight);
+                    window.moveTo(initialX, initialY);
+                    window.focus();
+                }, 50);
+
+                boundaryCheckHandler = (e) => {
+                    if (e.clientY > window.innerHeight - 100) {
+                        window.moveTo(initialX, initialY - 80);
+                    }
+                };
+                document.addEventListener('mousemove', boundaryCheckHandler);
+                
+                window.open('popup.html', 'popup_' + Date.now(), 'width=300,height=200,resizable=no,scrollbars=no,toolbar=no');
+            }
+
+            mainButton.style.display = 'none';
+            gameOverOverlay.style.display = 'flex';
+            gameOverSound.play();
         }
 
         setRandomButtonContent();
-        startButton.addEventListener('click', startSequence);
+        mainButton.addEventListener('click', triggerGameOver);
     </script>
 </body>
 </html>
