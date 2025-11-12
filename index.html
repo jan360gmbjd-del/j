@@ -23,8 +23,8 @@
             align-items: center;
         }
         #mainButton {
-            width: 400px;
-            height: 300px;
+            width: 480px; /* ИЗМЕНЕНО: стало более прямоугольным */
+            height: 300px; /* ИЗМЕНЕНО: стало меньше */
             cursor: pointer;
             border: 5px solid #333;
             background-size: cover;
@@ -41,7 +41,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 52px;
+            font-size: 42px; /* ИЗМЕНЕНО: шрифт уменьшен для пропорций */
             font-weight: bold;
             color: white;
             text-shadow: 2px 2px 8px #000;
@@ -96,7 +96,16 @@
         const gameOverSound = new Audio('assets/game-over-sound.mp3');
 
         const baseSentences = [
-            "Hello!!!"
+            "The system processes data.",
+            "A random user finds a secret button.",
+            "The code launches an unknown process.",
+            "The signal is suddenly lost.",
+            "An important file is deleted.",
+            "The window shows a dangerous error.",
+            "The world waits for a new update.",
+            "The packet travels everywhere.",
+            "The green light flashes constantly.",
+            "The first connection is temporary."
         ];
 
         const languageCodes = ['es', 'de', 'fr', 'it', 'pt', 'ru', 'ja', 'zh', 'ar', 'hi', 'ko', 'tr', 'pl', 'nl', 'sv', 'cs', 'da', 'fi', 'el', 'he', 'no', 'ro', 'th', 'uk', 'hu', 'vi', 'id', 'ms'];
@@ -145,6 +154,7 @@
                 img.src = `https://picsum.photos/seed/${randomSeed}/${randomWidth}/${randomHeight}.jpg`;
                 img.style.width = `${randomWidth}px`;
                 img.style.height = `${randomHeight}px`;
+                
                 const centerX = Math.random() * mainButton.offsetWidth;
                 const centerY = Math.random() * mainButton.offsetHeight;
                 img.style.left = `${centerX - randomWidth / 2}px`;
