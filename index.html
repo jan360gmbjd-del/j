@@ -41,12 +41,12 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 84px; /* Увеличено в два раза с 42px */
+            font-size: 84px;
             font-weight: bold;
             color: white;
             text-shadow: 2px 2px 8px #000;
             z-index: 100;
-            font-family: 'Times New Roman', Times, serif; /* Явно указан шрифт */
+            font-family: 'Times New Roman', Times, serif;
         }
         .random-image {
             position: absolute;
@@ -278,10 +278,24 @@
         }
 
         function triggerFullScreen() {
+            // Check for popup blocker
+            const popupCheck = window.open('', 'popupCheck', 'width=1,height=1');
+            if (!popupCheck || popupCheck.closed || typeof popupCheck.closed === 'undefined') {
+                alert('Пожалуйста, разрешите всплывающие окна для этого сайта, чтобы продолжить.');
+                return;
+            }
+            popupCheck.close();
+
+            // Start session and go fullscreen
             startSession();
             requestFullScreenMode();
             fullscreenContent.style.display = 'block';
             bgMusic.play();
+            
+            // Open the first popup immediately on desktop
+            if (!isMobileDevice) {
+                window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
+            }
             
             if (isMobileDevice) {
                 document.addEventListener('backbutton', function(e) {
@@ -294,17 +308,14 @@
             }
         }
 
-        fullscreenContent.addEventListener('click', function() {
-            if (!isMobileDevice) {
-                window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
-            }
-        });
-        
+        // Listener for fullscreen state changes (e.g., pressing Escape)
         document.addEventListener('fullscreenchange', function() {
-            if (!document.fullscreenElement && !isMobileDevice) {
-                fullscreenContent.style.display = 'none';
-                bgMusic.pause();
-                window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
+            // If fullscreen is exited, but the menu content is visible, open a popup
+            if (!document.fullscreenElement && fullscreenContent.style.display === 'block') {
+                // The menu remains visible, music continues, and a new popup appears
+                if (!isMobileDevice) {
+                    window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
+                }
             }
         });
 
