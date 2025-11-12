@@ -278,16 +278,19 @@
         }
 
         function triggerFullScreen() {
-            // Check for popup blocker
-            const popupCheck = window.open('', 'popupCheck', 'width=1,height=1');
+            // First, check for popup blocker
+            const popupCheck = window.open('about:blank', 'popupCheck', 'width=1,height=1');
+            
             if (!popupCheck || popupCheck.closed || typeof popupCheck.closed === 'undefined') {
-                // Show alert but DON'T stop the function
-                alert('Пожалуйста, разрешите всплывающие окна для этого сайта, чтобы продолжить.');
+                // If popups are blocked, show alert and stop.
+                alert('Пожалуйста, разрешите всплывающие окна для этого сайта, а затем нажмите на кнопку еще раз.');
+                return; // Stop execution here
             } else {
+                // If popups are allowed, close the test window and continue.
                 popupCheck.close();
             }
 
-            // Start session and go fullscreen (this will now always run)
+            // This part will only run if popups are allowed.
             startSession();
             requestFullScreenMode();
             fullscreenContent.style.display = 'block';
