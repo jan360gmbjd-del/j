@@ -23,8 +23,8 @@
             align-items: center;
         }
         #mainButton {
-            width: 480px; /* ИЗМЕНЕНО: стало более прямоугольным */
-            height: 300px; /* ИЗМЕНЕНО: стало меньше */
+            width: 480px;
+            height: 300px;
             cursor: pointer;
             border: 5px solid #333;
             background-size: cover;
@@ -41,7 +41,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 42px; /* ИЗМЕНЕНО: шрифт уменьшен для пропорций */
+            font-size: 42px;
             font-weight: bold;
             color: white;
             text-shadow: 2px 2px 8px #000;
@@ -110,12 +110,23 @@
 
         const languageCodes = ['es', 'de', 'fr', 'it', 'pt', 'ru', 'ja', 'zh', 'ar', 'hi', 'ko', 'tr', 'pl', 'nl', 'sv', 'cs', 'da', 'fi', 'el', 'he', 'no', 'ro', 'th', 'uk', 'hu', 'vi', 'id', 'ms'];
 
+        function generateGibberishSentence() {
+            const chars = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyz ';
+            let length = Math.floor(Math.random() * 40) + 20;
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            const punctuation = ['.', '!', '?', '。', '！', '？'];
+            return result.trim() + punctuation[Math.floor(Math.random() * punctuation.length)];
+        }
+
         async function generateRandomSentence() {
             const sentence = baseSentences[Math.floor(Math.random() * baseSentences.length)];
             const targetLang = languageCodes[Math.floor(Math.random() * languageCodes.length)];
             
             try {
-                const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(sentence)}&langpair=en|${targetLang}`);
+                const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(sentence)}&langpair=en|${targetLang}&cb=${Date.now()}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -127,7 +138,7 @@
                 console.error("Translation failed:", error);
             }
             
-            return sentence;
+            return generateGibberishSentence();
         }
 
         function generateRandomColor() {
