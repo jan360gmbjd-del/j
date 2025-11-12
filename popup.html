@@ -1,1 +1,108 @@
-<script language=JavaScript> html='%3C%21DOCTYPE%20html%3E%0D%0A%3Chtml%20lang%3D%22en%22%3E%0D%0A%3Chead%3E%0D%0A%20%20%20%20%3Cmeta%20charset%3D%22UTF-8%22%3E%0D%0A%20%20%20%20%3Ctitle%3Ejannnmg%3C%2Ftitle%3E%0D%0A%20%20%20%20%3Cstyle%3E%0D%0A%20%20%20%20%20%20%20%20body%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20margin%3A%200%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20padding%3A%200%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20width%3A%20300px%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20height%3A%20200px%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20background-image%3A%20url%28%27assets%2Fgame-over.gif%27%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20background-size%3A%20cover%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20background-position%3A%20center%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20color%3A%20white%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20text-shadow%3A%202px%202px%204px%20%23000%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20display%3A%20flex%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20flex-direction%3A%20column%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20justify-content%3A%20center%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20align-items%3A%20center%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20user-select%3A%20none%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20font-family%3A%20sans-serif%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20overflow%3A%20hidden%3B%0D%0A%20%20%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%3C%2Fstyle%3E%0D%0A%3C%2Fhead%3E%0D%0A%3Cbody%3E%0D%0A%20%20%20%20%3Caudio%20src%3D%22assets%2Fgame-over-sound.mp3%22%3E%3C%2Faudio%3E%0D%0A%0D%0A%20%20%20%20%3Cscript%3E%0D%0A%20%20%20%20%20%20%20%20const%20isMobileDevice%20%3D%20%27ontouchstart%27%20in%20window%20%7C%7C%20navigator.maxTouchPoints%20%3E%200%3B%0D%0A%0D%0A%20%20%20%20%20%20%20%20let%20x%20%3D%20100%3B%0D%0A%20%20%20%20%20%20%20%20let%20y%20%3D%20100%3B%0D%0A%20%20%20%20%20%20%20%20let%20vx%20%3D%2010%3B%0D%0A%20%20%20%20%20%20%20%20let%20vy%20%3D%208%3B%0D%0A%0D%0A%20%20%20%20%20%20%20%20function%20animate%28%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20const%20screenWidth%20%3D%20screen.availWidth%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20const%20screenHeight%20%3D%20screen.availHeight%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20const%20windowWidth%20%3D%20window.outerWidth%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20const%20windowHeight%20%3D%20window.outerHeight%3B%0D%0A%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20x%20%2B%3D%20vx%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20y%20%2B%3D%20vy%3B%0D%0A%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20%28x%20%2B%20windowWidth%20%3E%20screenWidth%20%7C%7C%20x%20%3C%200%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20vx%20%3D%20-vx%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20%28y%20%2B%20windowHeight%20%3E%20screenHeight%20%7C%7C%20y%20%3C%200%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20vy%20%3D%20-vy%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0D%0A%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20window.moveTo%28x%2C%20y%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20requestAnimationFrame%28animate%29%3B%0D%0A%20%20%20%20%20%20%20%20%7D%0D%0A%0D%0A%20%20%20%20%20%20%20%20window.onload%20%3D%20function%28%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20x%20%3D%20Math.random%28%29%20%2A%20%28screen.availWidth%20-%20300%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20y%20%3D%20Math.random%28%29%20%2A%20%28screen.availHeight%20-%20200%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20animate%28%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20document.querySelector%28%27audio%27%29.play%28%29%3B%0D%0A%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20window.addEventListener%28%27click%27%2C%20function%28%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20if%20%28%21isMobileDevice%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20window.open%28%27popup.html%27%2C%20%27popup_%27%20%2B%20Date.now%28%29%2C%20%27width%3D300%2Cheight%3D200%2Cresizable%3Dno%2Cscrollbars%3Dno%2Ctoolbar%3Dno%27%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20if%20%28Math.random%28%29%20%3E%200.1%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20setTimeout%28%28%29%20%3D%3E%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20if%20%28%21isMobileDevice%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20window.open%28%27popup.html%27%2C%20%27popup_%27%20%2B%20Date.now%28%29%2C%20%27width%3D300%2Cheight%3D200%2Cresizable%3Dno%2Cscrollbars%3Dno%2Ctoolbar%3Dno%27%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%20Math.random%28%29%20%2A%201000%20%2B%20800%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0D%0A%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20for%20%28let%20i%20%3D%200%3B%20i%20%3C%203%3B%20i%2B%2B%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20if%20%28Math.random%28%29%20%3E%200.5%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20setTimeout%28%28%29%20%3D%3E%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20if%20%28%21isMobileDevice%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20window.open%28%27popup.html%27%2C%20%27popup_%27%20%2B%20Date.now%28%29%2C%20%27width%3D300%2Cheight%3D200%2Cresizable%3Dno%2Cscrollbars%3Dno%2Ctoolbar%3Dno%27%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%2C%20Math.random%28%29%20%2A%205000%20%2B%202000%20%2B%20%28i%20%2A%202000%29%29%3B%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0D%0A%20%20%20%20%20%20%20%20%7D%3B%0D%0A%20%20%20%20%3C%2Fscript%3E%0D%0A%3C%2Fbody%3E%0D%0A%3C%2Fhtml%3E';d=unescape(html);document.write(d);</script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>JANNNMG</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 650px;
+            height: 650px;
+            background-image: url('assets/game-over.gif');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        #closeButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <button id="closeButton">×</button>
+    <audio id="popupSound">
+        <source src="assets/game-over-sound.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        let x = Math.random() * (screen.availWidth - 650);
+        let y = Math.random() * (screen.availHeight - 650);
+        let vx = (Math.random() - 0.5) * 10;
+        let vy = (Math.random() - 0.5) * 10;
+        let stuckToCursor = false;
+        
+        const closeButton = document.getElementById('closeButton');
+        const popupSound = document.getElementById('popupSound');
+        
+        function animate() {
+            if (!stuckToCursor) {
+                const screenWidth = screen.availWidth;
+                const screenHeight = screen.availHeight;
+                const windowWidth = window.outerWidth;
+                const windowHeight = window.outerHeight;
+
+                x += vx;
+                y += vy;
+
+                if (x + windowWidth > screenWidth || x < 0) {
+                    vx = -vx;
+                }
+                if (y + windowHeight > screenHeight || y < 0) {
+                    vy = -vy;
+                }
+
+                window.moveTo(x, y);
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        function createNewPopup() {
+            setTimeout(() => {
+                window.open('popup.html', 'popup_' + Date.now(), 'width=650,height=650,resizable=no,scrollbars=no,toolbar=no');
+                createNewPopup();
+            }, Math.random() * 2000 + 4000);
+        }
+        
+        document.addEventListener('mousemove', function(e) {
+            if (stuckToCursor) {
+                window.moveTo(e.screenX - 325, e.screenY - 325);
+            }
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (e.target !== closeButton) {
+                stuckToCursor = !stuckToCursor;
+                window.open('popup.html', 'popup_' + Date.now(), 'width=650,height=650,resizable=no,scrollbars=no,toolbar=no');
+            }
+        });
+        
+        closeButton.addEventListener('click', function() {
+            window.close();
+        });
+        
+        window.onload = function() {
+            animate();
+            createNewPopup();
+            popupSound.play();
+        };
+    </script>
+</body>
+</html>
