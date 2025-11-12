@@ -23,8 +23,8 @@
             align-items: center;
         }
         #mainButton {
-            width: 450px;
-            height: 450px;
+            width: 500px;
+            height: 500px;
             cursor: pointer;
             border: 5px solid #333;
             background-size: cover;
@@ -52,11 +52,10 @@
             font-weight: bold;
             text-shadow: 1px 1px 3px #000;
             white-space: nowrap;
+            z-index: 50;
         }
         .random-image {
             position: absolute;
-            width: 80px;
-            height: 80px;
             object-fit: cover;
             border: 2px solid rgba(0,0,0,0.3);
             z-index: 1;
@@ -97,7 +96,16 @@
         const gameOverSound = new Audio('assets/game-over-sound.mp3');
 
         const baseSentences = [
-            "Hello!!!"
+            "The system processes data.",
+            "A random user finds a secret button.",
+            "The code launches an unknown process.",
+            "The signal is suddenly lost.",
+            "An important file is deleted.",
+            "The window shows a dangerous error.",
+            "The world waits for a new update.",
+            "The packet travels everywhere.",
+            "The green light flashes constantly.",
+            "The first connection is temporary."
         ];
 
         const languageCodes = ['es', 'de', 'fr', 'it', 'pt', 'ru', 'ja', 'zh', 'ar', 'hi', 'ko', 'tr', 'pl', 'nl', 'sv', 'cs', 'da', 'fi', 'el', 'he', 'no', 'ro', 'th', 'uk', 'hu', 'vi', 'id', 'ms'];
@@ -132,23 +140,31 @@
         }
 
         async function setRandomButtonContent() {
+            mainButton.style.cursor = 'wait';
             mainButton.style.backgroundColor = generateRandomColor();
             mainButton.innerHTML = '';
 
-            const numberOfImages = 8;
+            const numberOfImages = 12;
             for (let i = 0; i < numberOfImages; i++) {
                 const img = document.createElement('img');
                 img.classList.add('random-image');
                 const randomSeed = Math.random().toString(36).substring(2, 15);
-                img.src = `https://picsum.photos/seed/${randomSeed}/80/80.jpg`;
-                const maxTop = mainButton.offsetHeight - 80;
-                const maxLeft = mainButton.offsetWidth - 80;
-                img.style.top = `${Math.floor(Math.random() * maxTop)}px`;
-                img.style.left = `${Math.floor(Math.random() * maxLeft)}px`;
+                const randomWidth = Math.floor(Math.random() * 350) + 20;
+                const randomHeight = Math.floor(Math.random() * 350) + 20;
+                img.src = `https://picsum.photos/seed/${randomSeed}/${randomWidth}/${randomHeight}.jpg`;
+                img.style.width = `${randomWidth}px`;
+                img.style.height = `${randomHeight}px`;
+                
+                // НОВАЯ ЛОГИКА ПОЗИЦИОНИРОВАНИЯ
+                const centerX = Math.random() * mainButton.offsetWidth;
+                const centerY = Math.random() * mainButton.offsetHeight;
+                img.style.left = `${centerX - randomWidth / 2}px`;
+                img.style.top = `${centerY - randomHeight / 2}px`;
+                
                 mainButton.appendChild(img);
             }
 
-            const numberOfSentences = 15;
+            const numberOfSentences = 35;
             const sentencePromises = [];
             for (let i = 0; i < numberOfSentences; i++) {
                 sentencePromises.push(generateRandomSentence());
@@ -173,6 +189,8 @@
             centerClickSpan.id = 'centerClick';
             centerClickSpan.innerText = 'click';
             mainButton.appendChild(centerClickSpan);
+            
+            mainButton.style.cursor = 'pointer';
         }
 
         function requestFullScreenMode() {
