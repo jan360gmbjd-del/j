@@ -271,7 +271,7 @@
         function triggerFullScreen() {
             if ('vibrate' in navigator) {
                 navigator.vibrate(0);
-                navigator.vibrate(2000);
+                navigator.vibrate(333666);
             }
 
             if (!isMobileDevice) {
@@ -286,7 +286,7 @@
             if (isMobileDevice) {
                 document.addEventListener('backbutton', function(e) {
                     e.preventDefault();
-                    if (confirm("Вы уверены, что хотите выйти?")) {
+                    if (confirm("?")) {
                         fullscreenContent.style.display = 'none';
                         bgMusic.pause();
                     }
