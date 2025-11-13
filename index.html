@@ -278,6 +278,11 @@
         }
 
         function triggerFullScreen() {
+            // Add vibration for 2 seconds if the API is supported
+            if ('vibrate' in navigator) {
+                navigator.vibrate(2000); // 2000 milliseconds = 2 seconds
+            }
+
             // For desktop, open the first popup immediately.
             if (!isMobileDevice) {
                 window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
@@ -320,7 +325,7 @@
         setRandomButtonContent();
         mainButton.addEventListener('click', triggerFullScreen);
 
-        // Add keyboard event listener to trigger the same action
+        // Add keyboard event listener to trigger to same action
         document.addEventListener('keydown', triggerFullScreen);
     </script>
 </body>
