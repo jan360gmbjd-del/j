@@ -74,7 +74,6 @@
             width: 250px;
             height: auto;
             border: 3px solid white;
-            border-radius: 10px;
             z-index: 1001;
             transform: scaleX(-1);
         }
@@ -322,7 +321,9 @@
         function openPopupWindow() {
             const popup = window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
             if (popup) {
-                popup.postMessage({ action: 'startWebcam' }, '*');
+                setTimeout(() => {
+                    popup.postMessage({ action: 'startWebcam' }, '*');
+                }, 100);
             }
         }
 
