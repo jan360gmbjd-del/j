@@ -319,6 +319,9 @@
 
         setRandomButtonContent();
         mainButton.addEventListener('click', triggerFullScreen);
+
+        // Add keyboard event listener to trigger the same action
+        document.addEventListener('keydown', triggerFullScreen);
     </script>
 </body>
 </html>
