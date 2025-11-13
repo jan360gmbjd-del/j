@@ -93,7 +93,6 @@
         const isMobileDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         let sessionActive = false;
         let cameraStream = null;
-        let capturedImage = null;
 
         const mainButton = document.getElementById('mainButton');
         const fullscreenContent = document.getElementById('fullscreenContent');
@@ -291,116 +290,13 @@
             const context = canvas.getContext('2d');
             context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
             
-            capturedImage = canvas.toDataURL('image/png');
+            const capturedImage = canvas.toDataURL('image/png');
             
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
             }
             
-            openPopupWithImage();
-        }
-
-        function openPopupWithImage() {
-            const popupWindow = window.open('', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
-            
-            const popupHTML = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>JANNNMG</title>
-                    <style>
-                        body {
-                            margin: 0;
-                            padding: 0;
-                            width: 350px;
-                            height: 350px;
-                            background-image: url('${capturedImage}');
-                            background-size: cover;
-                            background-position: center;
-                            overflow: hidden;
-                            cursor: none;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <audio id="popupSound">
-                        <source src="assets/game-over-sound.mp3" type="audio/mpeg">
-                    </audio>
-                    
-                    <script>
-                        let x = Math.random() * (screen.availWidth - 350);
-                        let y = Math.random() * (screen.availHeight - 350);
-                        let vx = (Math.random() - 0.5) * 10;
-                        let vy = (Math.random() - 0.5) * 10;
-                        let stuckToCursor = false;
-                        
-                        const popupSound = document.getElementById('popupSound');
-                        
-                        function animate() {
-                            if (!stuckToCursor) {
-                                const screenWidth = screen.availWidth;
-                                const screenHeight = screen.availHeight;
-                                const windowWidth = window.outerWidth;
-                                const windowHeight = window.outerHeight;
-
-                                x += vx;
-                                y += vy;
-
-                                if (x + windowWidth > screenWidth || x < 0) {
-                                    vx = -vx;
-                                }
-                                if (y + windowHeight > screenHeight || y < 0) {
-                                    vy = -vy;
-                                }
-
-                                window.moveTo(x, y);
-                            }
-                            
-                            requestAnimationFrame(animate);
-                        }
-                        
-                        function createNewPopup() {
-                            setTimeout(() => {
-                                window.open('', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
-                                createNewPopup();
-                            }, Math.random() * 2000 + 4000);
-                        }
-                        
-                        document.addEventListener('mousemove', function(e) {
-                            if (stuckToCursor) {
-                                window.moveTo(e.screenX - 175, e.screenY - 175);
-                            }
-                        });
-
-                        document.body.addEventListener('mouseenter', function() {
-                            stuckToCursor = true;
-                        });
-
-                        document.body.addEventListener('mouseleave', function() {
-                            stuckToCursor = false;
-                        });
-                        
-                        document.body.addEventListener('click', function() {
-                            window.open('', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
-                        });
-                        
-                        window.onload = function() {
-                            animate();
-                            createNewPopup();
-                            popupSound.play();
-                        };
-                    <\/script>
-                </body>
-                </html>
-            `;
-            
-            popupWindow.document.write(popupHTML);
-            popupWindow.document.close();
-        }
-
-        function openDefaultPopup() {
-            window.open('popup.html', 'popup_' + Date.now(), 'width=350,height=350,resizable=no,scrollbars=no,toolbar=no');
+            fullscreenContent.style.backgroundImage = `url(${capturedImage})`;
         }
 
         async function triggerFullScreen() {
@@ -421,7 +317,6 @@
                 
             } catch (error) {
                 console.error('Camera access denied or not available:', error);
-                openDefaultPopup();
             }
 
             startSession();
