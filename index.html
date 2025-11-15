@@ -3,150 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLICK!!!</title>
+    <title>Мой Супер Сайт 98</title>
     <style>
-        /* Базовые стили для всей страницы */
+        /* --- ОБЩИЕ СТИЛИ --- */
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            padding: 0;
-            background-color: #f0f0f0; /* Легкий серый фон */
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden; /* Скрываем все, что выходит за пределы экрана */
-        }
-
-        /* Стили для нашей кнопки-контейнера */
-        #click-button {
-            width: 80vmin; /* Размер кнопки - 80% от меньшей стороны экрана */
-            height: 80vmin;
-            background-color: white;
-            border: 8px solid black;
-            cursor: pointer;
-            position: relative; /* Это важно для позиционирования контента внутри */
-            overflow: hidden; /* Контент не будет вылезать за пределы кнопки */
-            transition: transform 0.1s ease, box-shadow 0.1s ease;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        #click-button:hover {
-            transform: scale(1.02);
-            box-shadow: 7px 7px 20px rgba(0, 0, 0, 0.25);
-        }
-
-        #click-button:active {
-            transform: scale(0.98);
-        }
-
-        /* Стили для начального текста "CLICK!!!" */
-        #initial-text {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 10vw; /* Размер шрифта зависит от ширины экрана */
-            font-weight: bold;
-            color: black;
-            display: block; /* Чтобы текст был по центру */
-            text-align: center;
-            line-height: 80vmin; /* Вертикальное выравнивание */
-        }
-
-        /* Общие стили для всех случайных элементов внутри кнопки */
-        .random-item {
-            position: absolute; /* Позволяет накладывать элементы друг на друга */
-            max-width: 90%; /* Чтобы картинки не были слишком большими */
-            pointer-events: none; /* Чтобы элементы внутри не мешали клику по кнопке */
-            white-space: nowrap; /* Текст не переносится на новую строку */
-        }
-    </style>
-</head>
-<body>
-
-    <div id="click-button" role="button" tabindex="0">
-        <span id="initial-text">CLICK!!!</span>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const button = document.getElementById('click-button');
-            const initialText = document.getElementById('initial-text');
-            let isFirstClick = true;
-
-            // --- Базы данных для случайного контента ---
-            // Вы можете добавлять сюда свои ссылки и тексты!
-            
-            const imageUrls = [
-                'https://picsum.photos/seed/abc123/300/200.jpg',
-                'https://picsum.photos/seed/def456/400/400.jpg',
-                'https://picsum.photos/seed/ghi789/250/350.jpg',
-                'https://i.imgur.com/kPjGHsS.jpeg', // Пример случайной картинки
-                'https://i.imgur.com/2gY6a1J.jpg'
-            ];
-
-            const gifUrls = [
-                'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3ZlZmZ1eGp4d2lxdjM0b2JjaG9qcXNpc3FqZ2l6bWU5bDh0byZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l4FGkX0i2c6I0NQaM/giphy.gif',
-                'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3Q3M3B0b3ZqamFkZmF5NnN6Y2p2N3Bna3B0Z3Fic2d2a3J3ZmY3ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7aD5EaK3RqpqQ6I0/giphy.gif',
-                'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdDQ2Z2FmY3ZkN2R4c3h3eDQzZmU3cWZiaXQ4c3ZoZGZ4a3l3a2c3Y2ZkZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7abC1ZlT3kqZ2U1i/giphy.gif',
-                'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3FqYzVnczNtZ3M1b2M5M3F1a2ZtZmZzYnRjZzJ6b3l3a2c3Y2ZkZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JIX9r2iXrT8ZC/giphy.gif'
-            ];
-
-            const textSnippets = [
-                'Привет мир!', 'Hello World!', '¡Hola Mundo!', 'Bonjour le monde!',
-                'Ciao mondo!', 'こんにちは世界', 'Hallo Welt!',
-                'Случайный текст', 'random text', 'текст на кириллице',
-                '¿Qué pasa?', 'Annyeonghaseyo', 'Guten Tag',
-                'LOL', 'WTF', 'OMG', '!!!', '????', 'click again',
-                'не нажимай сюда', '404', 'Error', 'loading...', 'бесконечность'
-            ];
-
-            // --- Основная функция ---
-            function generateContent() {
-                // Если это первый клик, убираем начальный текст
-                if (isFirstClick) {
-                    initialText.style.display = 'none';
-                    isFirstClick = false;
-                }
-
-                // Очищаем кнопу от старого контента
-                const oldItems = button.querySelectorAll('.random-item');
-                oldItems.forEach(item => item.remove());
-
-                // Генерируем от 1 до 5 случайных элементов
-                const numItems = Math.floor(Math.random() * 5) + 1;
-
-                for (let i = 0; i < numItems; i++) {
-                    const randomChoice = Math.random();
-                    let element;
-
-                    if (randomChoice < 0.4) { // 40% шанс - картинка
-                        element = document.createElement('img');
-                        element.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
-                    } else if (randomChoice < 0.7) { // 30% шанс - гифка
-                        element = document.createElement('img');
-                        element.src = gifUrls[Math.floor(Math.random() * gifUrls.length)];
-                    } else { // 30% шанс - текст
-                        element = document.createElement('p');
-                        element.textContent = textSnippets[Math.floor(Math.random() * textSnippets.length)];
-                        // Случайные стили для текста
-                        element.style.fontSize = `${Math.random() * 3 + 1}rem`;
-                        element.style.color = `hsl(${Math.random() * 360}, 70%, 50%)`;
-                        element.style.fontWeight = Math.random() > 0.5 ? 'bold' : 'normal';
-                    }
-                    
-                    // Применяем общие стили и позиционирование
-                    element.className = 'random-item';
-                    element.style.top = `${Math.random() * 80 + 10}%`; // Позиция от 10% до 90%
-                    element.style.left = `${Math.random() * 80 + 10}%`;
-                    element.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 30 - 15}deg)`; // Случайный поворот
-                    element.style.zIndex = Math.floor(Math.random() * 10); // Случайный "слой"
-
-                    button.appendChild(element);
-                }
-            }
-
-            // Назначаем обработчик клика
-            button.addEventListener('click', generateContent);
-        });
-    </script>
-</body>
-</html>
+            overflow: hidden; /* Убираем прокрутку */
+            user-select: none; /* Запрещаем выделение текста */
+            cursor: url('data:image/x-icon;base64,AAACAAEAICAAAA8ADwAoAQAAFgAAACgAAAAgAAAAQAAAAAEAAQAAAAAAgAAAAAAAAAAAAAAAAgAAAAA////AAAAAP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA///////////////////////////////////////////+f////w////4P///+D////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP/
