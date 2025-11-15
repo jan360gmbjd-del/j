@@ -14,45 +14,17 @@
             justify-content: center;
             align-items: center;
             font-family: 'Times New Roman', Times, serif;
-            position: relative;
-            overflow: hidden;
+            position: relative; /* Added to allow absolute positioning inside body */
         }
-
-        .welcome-text {
+        .welcome {
             position: absolute;
+            top: 10px;
+            left: 10px;
             font-family: 'Times New Roman', Times, serif;
-            font-size: 20px;
-            font-weight: bold;
-            color: #000080;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            z-index: 1;
+            font-size: 24px;
+            color: #000000;
+            text-shadow: none;
         }
-
-        .welcome-top {
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            width: 100%;
-        }
-
-        .welcome-left {
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%) rotate(-90deg);
-            transform-origin: left center;
-            white-space: nowrap;
-        }
-
-        .welcome-right {
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%) rotate(90deg);
-            transform-origin: right center;
-            white-space: nowrap;
-        }
-
         .win98-button {
             background-color: #C0C0C0;
             border: 2px solid;
@@ -68,29 +40,22 @@
             outline: none;
             box-shadow: none;
             position: relative;
-            z-index: 2;
         }
-
         .win98-button:hover {
             background-color: #C0C0C0;
             border-color: #FFFFFF #808080 #808080 #FFFFFF;
         }
-
         .win98-button:active {
             border-color: #808080 #FFFFFF #FFFFFF #808080;
             padding: 21px 39px 19px 41px;
         }
-
         .win98-button:focus {
             outline: 1px dotted #000000;
             outline-offset: -4px;
         }
-
         .content {
             text-align: center;
-            z-index: 2;
         }
-
         .hidden-content {
             display: none;
             margin-top: 30px;
@@ -100,10 +65,7 @@
             border-color: #FFFFFF #808080 #808080 #FFFFFF;
             font-family: 'MS Sans Serif', sans-serif;
             font-size: 14px;
-            position: relative;
-            z-index: 3;
         }
-
         .window-title {
             background: linear-gradient(to right, #000080, #1084D0);
             color: white;
@@ -115,7 +77,6 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .close-button {
             background: #C0C0C0;
             border: 1px solid;
@@ -127,36 +88,18 @@
             text-align: center;
             cursor: pointer;
         }
-
         .close-button:active {
             border-color: #808080 #FFFFFF #FFFFFF #808080;
-        }
-
-        /* Добавляем пиксельный эффект для текста */
-        @media (min-resolution: 2dppx) {
-            .welcome-text {
-                image-rendering: pixelated;
-                image-rendering: -moz-crisp-edges;
-                image-rendering: crisp-edges;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Текст приветствия сверху -->
-    <div class="welcome-text welcome-top">WELCOME TO JANNNMGC WEB</div>
-    
-    <!-- Текст приветствия слева -->
-    <div class="welcome-text welcome-left">WELCOME TO JANNNMGC WEB</div>
-    
-    <!-- Текст приветствия справа -->
-    <div class="welcome-text welcome-right">WELCOME TO JANNNMGC WEB</div>
-
+    <div class="welcome">welcome to jannnmgc web</div>
     <div class="content">
         <button class="win98-button" onclick="showContent()">
             CLICK HERE!!!
         </button>
-        
+      
         <div id="hiddenContent" class="hidden-content">
             <div class="window-title">
                 <span>System Message</span>
@@ -164,16 +107,13 @@
             </div>
             <p>🎉 Поздравляю! Ты нашел секретное сообщение!</p>
             <p>Этот сайт создан в стиле Windows 98 с пиксельной графикой.</p>
-            <p>Добро пожаловать в JANNNMGC WEB!</p>
             <p>Нажми на X чтобы закрыть это окно.</p>
         </div>
     </div>
-
     <script>
         function showContent() {
             document.getElementById('hiddenContent').style.display = 'block';
         }
-
         function hideContent() {
             document.getElementById('hiddenContent').style.display = 'none';
         }
