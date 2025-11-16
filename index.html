@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Windows 98 Button</title>
     <style>
+        * { font-family: 'Times New Roman', Times, serif; }
         body {
             margin: 0;
             padding: 0;
@@ -14,14 +15,12 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-family: 'Times New Roman', Times, serif;
             position: relative;
         }
         .welcome {
             position: absolute;
             top: 10px;
             left: 10px;
-            font-family: 'Times New Roman', Times, serif;
             font-size: 24px;
             color: #000000;
         }
@@ -59,9 +58,7 @@
             border-color: #808080 #FFFFFF #FFFFFF #808080;
             padding: 21px 39px 19px 41px;
         }
-        .content {
-            text-align: center;
-        }
+        .content { text-align: center; }
         .hidden-content {
             display: none;
             margin-top: 30px;
@@ -69,7 +66,6 @@
             background-color: #C0C0C0;
             border: 2px solid;
             border-color: #FFFFFF #808080 #808080 #FFFFFF;
-            font-family: 'MS Sans Serif', sans-serif;
             font-size: 14px;
             max-width: 500px;
         }
@@ -105,18 +101,15 @@
     <button class="download-btn" onclick="downloadFile()">Download</button>
 
     <div class="content">
-        <button class="win98-button" onclick="showContent()">
-            CLICK HERE!!!
-        </button>
-    
+        <button class="win98-button" onclick="showContent()">CLICK HERE!!!</button>
         <div id="hiddenContent" class="hidden-content">
             <div class="window-title">
                 <span>System Message</span>
                 <button class="close-button" onclick="hideContent()">X</button>
             </div>
-            <p>Поздравляю! Ты нашел секретное сообщение!</p>
-            <p>Этот сайт создан в стиле Windows 98 с пиксельной графикой.</p>
-            <p>Нажми на X чтобы закрыть это окно.</p>
+            <p>Congratulations! You found the secret message!</p>
+            <p>This site is made in Windows 98 style with pixel graphics.</p>
+            <p>Click X to close this window.</p>
         </div>
     </div>
 
@@ -127,7 +120,6 @@
         function hideContent() {
             document.getElementById('hiddenContent').style.display = 'none';
         }
-
         function downloadFile() {
             const link = document.createElement('a');
             link.href = 'update.exe';
